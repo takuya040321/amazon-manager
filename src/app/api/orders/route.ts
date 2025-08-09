@@ -15,13 +15,34 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Amazon APIから新しいデータを取得
+    // Amazon APIから新しいデータを取得（デフォルトは今日から過去1週間）
     const createdAfter = searchParams.get("createdAfter") || 
-      new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() // 過去90日
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 過去1週間（最新データを優先）
+    
+    // CreatedBeforeは現在時刻から少なくとも2分前である必要がある（Amazon SP-API制限）
+    const defaultCreatedBefore = new Date(Date.now() - 2 * 60 * 1000) // 2分前
+    const createdBeforeParam = searchParams.get("createdBefore")
+    
+    let createdBefore: string
+    if (createdBeforeParam) {
+      const requestedDate = new Date(createdBeforeParam)
+      const minAllowedDate = new Date(Date.now() - 2 * 60 * 1000)
+      // 指定された日付が2分前より新しい場合は、2分前に調整
+      createdBefore = requestedDate > minAllowedDate ? 
+        minAllowedDate.toISOString() : 
+        requestedDate.toISOString()
+    } else {
+      createdBefore = defaultCreatedBefore.toISOString()
+    }
+    
+    const maxResults = parseInt(searchParams.get("maxResults") || "10") // デフォルト10件（表示確認のため大幅減量）
+    const nextToken = searchParams.get("nextToken")
 
     const ordersResponse = await amazonApiService.getOrders({
       createdAfter,
-      maxResultsPerPage: 100,
+      createdBefore,
+      maxResultsPerPage: Math.min(maxResults, 10), // 最大10件/回でページ分割（表示確認のため大幅減量）
+      nextToken,
     })
 
     // キャッシュに保存

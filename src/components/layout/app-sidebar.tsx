@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Home, Package, ShoppingCart, BarChart3 } from "lucide-react"
+import { Home, Package, ShoppingCart, BarChart3, Settings } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -32,6 +32,11 @@ const menuItems = [
     title: "レポート",
     url: "/reports",
     icon: BarChart3,
+  },
+  {
+    title: "SP-API設定",
+    url: "/setup",
+    icon: Settings,
   },
 ]
 

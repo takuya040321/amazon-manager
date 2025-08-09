@@ -13,9 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { RefreshCw, Eye, Package, Download, Mail, Send } from "lucide-react"
+import { RefreshCw, Eye, Package, Download, Mail, Send, ChevronLeft, ChevronRight } from "lucide-react"
 import { useOrders } from "@/hooks/use-orders"
 import { useReviewRequests } from "@/hooks/use-review-requests"
+import { useDateFilter } from "@/hooks/use-date-filter"
+import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Order } from "@/types/order"
 
 function getStatusColor(status: string) {
@@ -38,9 +40,36 @@ function getFulfillmentChannelLabel(channel: string) {
 }
 
 export default function OrdersPage() {
-  const { orders, isLoading, error, lastUpdated, totalCount, refreshOrders } = useOrders()
+  const { 
+    orders, 
+    isLoading, 
+    error, 
+    lastUpdated, 
+    totalCount, 
+    hasMorePages,
+    refreshOrders, 
+    loadMoreOrders,
+    filterByDateRange 
+  } = useOrders()
   const { sendBatchReviewRequests, isLoading: isReviewLoading } = useReviewRequests()
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
+  
+  // 日付フィルター
+  const {
+    startDate,
+    endDate,
+    isDateRangeSelected,
+    setStartDate,
+    setEndDate,
+    clearDateFilter,
+    getDateFilterParams,
+  } = useDateFilter()
+
+  // 日付フィルターが変更された時の処理
+  const handleDateFilterApply = async () => {
+    const params = getDateFilterParams()
+    await filterByDateRange(params.createdAfter, params.createdBefore)
+  }
 
   const handleSelectOrder = (orderId: string, checked: boolean) => {
     setSelectedOrders(prev => 
@@ -112,9 +141,9 @@ export default function OrdersPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">注文管理</h1>
+            <h1 className="text-3xl font-bold tracking-tight">レビュー依頼</h1>
             <p className="text-muted-foreground">
-              Amazon注文の一覧と詳細
+              Amazon注文からレビュー依頼を送信（今日から過去1週間の10件を表示）
               {lastUpdated && (
                 <span className="ml-2 text-sm">
                   （最終更新: {new Date(lastUpdated).toLocaleString("ja-JP")}）
@@ -144,6 +173,57 @@ export default function OrdersPage() {
           </div>
         </div>
 
+        {/* 期間選択フィルター */}
+        <Card>
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">期間フィルター</CardTitle>
+              {isDateRangeSelected && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    clearDateFilter()
+                    refreshOrders()
+                  }}
+                  disabled={isLoading}
+                >
+                  全期間表示
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center justify-between">
+              <DateRangePicker
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+                onClear={() => {
+                  clearDateFilter()
+                  refreshOrders()
+                }}
+                className="flex-1"
+              />
+              <Button
+                onClick={handleDateFilterApply}
+                disabled={isLoading || (!startDate && !endDate)}
+                className="ml-4"
+              >
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    検索中...
+                  </>
+                ) : (
+                  "期間で絞り込み"
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -153,7 +233,7 @@ export default function OrdersPage() {
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalOrders}</div>
               <p className="text-xs text-muted-foreground">
-                過去90日間
+                {isDateRangeSelected ? "選択期間" : "過去3ヶ月間"}
               </p>
             </CardContent>
           </Card>
@@ -166,7 +246,7 @@ export default function OrdersPage() {
             <CardContent>
               <div className="text-2xl font-bold">¥{stats.totalRevenue.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                過去90日間
+                {isDateRangeSelected ? "選択期間" : "過去3ヶ月間"}
               </p>
             </CardContent>
           </Card>
@@ -213,9 +293,9 @@ export default function OrdersPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>注文一覧</CardTitle>
+            <CardTitle>レビュー依頼対象注文</CardTitle>
             <CardDescription>
-              直近の注文履歴（チェックした注文にレビュー依頼を送信できます）
+              発送済み・30日以内・未送信の注文（チェックした注文にレビュー依頼を送信できます）
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -242,7 +322,7 @@ export default function OrdersPage() {
                     </TableHead>
                     <TableHead>注文ID</TableHead>
                     <TableHead>注文日</TableHead>
-                    <TableHead>顧客名</TableHead>
+                    <TableHead>商品</TableHead>
                     <TableHead>金額</TableHead>
                     <TableHead>商品数</TableHead>
                     <TableHead>配送方法</TableHead>
@@ -252,10 +332,10 @@ export default function OrdersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((order) => {
+                  {orders.map((order, index) => {
                     const eligible = canSendReviewRequest(order)
                     return (
-                      <TableRow key={order.id}>
+                      <TableRow key={`${order.amazonOrderId}-${order.id}-${index}`}>
                         <TableCell>
                           <input
                             type="checkbox"
@@ -272,7 +352,35 @@ export default function OrdersPage() {
                           {new Date(order.purchaseDate).toLocaleDateString("ja-JP")}
                         </TableCell>
                         <TableCell>
-                          {order.customer.name || order.customer.buyerInfo?.buyerName || "非公開"}
+                          <div className="flex items-center gap-3">
+                            {order.items.length > 0 && order.items[0].imageUrl ? (
+                              <img
+                                src={order.items[0].imageUrl}
+                                alt={order.items[0].title}
+                                className="w-10 h-10 object-cover rounded border"
+                                onError={(e) => {
+                                  // 画像読み込みエラー時はPackageアイコンを表示
+                                  const target = e.currentTarget
+                                  target.style.display = 'none'
+                                  const fallback = target.nextElementSibling as HTMLElement
+                                  if (fallback) fallback.style.display = 'flex'
+                                }}
+                              />
+                            ) : null}
+                            <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center" style={{ display: order.items.length > 0 && order.items[0].imageUrl ? 'none' : 'flex' }}>
+                              <Package className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium truncate">
+                                {order.items.length > 0 ? order.items[0].title : "商品情報取得中"}
+                              </div>
+                              {order.items.length > 1 && (
+                                <div className="text-xs text-muted-foreground">
+                                  他{order.items.length - 1}点
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell>¥{order.totalAmount.toLocaleString()}</TableCell>
                         <TableCell>{order.numberOfItemsShipped + order.numberOfItemsUnshipped}個</TableCell>
@@ -309,6 +417,30 @@ export default function OrdersPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* ページネーション */}
+        {hasMorePages && (
+          <div className="flex justify-center pt-4">
+            <Button
+              variant="outline"
+              onClick={loadMoreOrders}
+              disabled={isLoading}
+              className="px-6"
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  読み込み中...
+                </>
+              ) : (
+                <>
+                  <ChevronRight className="mr-2 h-4 w-4" />
+                  さらに読み込む
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </MainLayout>
   )

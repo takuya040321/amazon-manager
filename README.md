@@ -39,15 +39,42 @@ AmazonセラーのためのWebアプリケーションです。Amazon SP-APIと�
 
 `.env.local`ファイルを作成し、以下を設定：
 
+#### 本番環境の場合
+Amazon SP-APIの認証情報を取得済みの場合：
+
 \`\`\`env
 # Amazon SP-API Configuration
-AMAZON_REFRESH_TOKEN=your_refresh_token_here
-AMAZON_CLIENT_ID=your_client_id_here
-AMAZON_CLIENT_SECRET=your_client_secret_here
-AMAZON_REGION=us-east-1
+AMAZON_REFRESH_TOKEN=Atzr|IwEBIA...your_actual_refresh_token
+AMAZON_CLIENT_ID=amzn1.application-oa2-client.your_client_id
+AMAZON_CLIENT_SECRET=your_actual_client_secret
+AMAZON_REGION=us-west-2
 AMAZON_MARKETPLACE_ID=A1VC38T7YXB528
 
-# Email Service Configuration
+# 本番モード設定
+USE_MOCK_DATA=false
+DEBUG_API_CALLS=false
+\`\`\`
+
+#### 開発・テスト環境の場合
+SP-API認証設定前でもモックデータでテストできます：
+
+\`\`\`env
+# Amazon SP-API Configuration（空でもOK）
+AMAZON_REFRESH_TOKEN=
+AMAZON_CLIENT_ID=
+AMAZON_CLIENT_SECRET=
+AMAZON_REGION=us-west-2
+AMAZON_MARKETPLACE_ID=A1VC38T7YXB528
+
+# モックモード設定（開発時）
+USE_MOCK_DATA=true
+DEBUG_API_CALLS=true
+\`\`\`
+
+#### その他の設定
+
+\`\`\`env
+# Email Service Configuration（レビュー依頼用）
 EMAIL_API_KEY=your_email_api_key_here
 EMAIL_FROM=noreply@yourdomain.com
 
@@ -71,6 +98,19 @@ npm run dev
 \`\`\`
 
 [http://localhost:3000](http://localhost:3000)でアプリにアクセス
+
+### 4. SP-API認証設定（本番環境）
+
+本格的にAmazon SP-APIを使用する場合の設定手順：
+
+1. **設定画面にアクセス**: アプリの「SP-API設定」メニューから設定ページを開く
+2. **接続テスト実行**: 「接続テストを実行」ボタンで現在の設定状況を確認
+3. **Amazon Developer Console**: 指示に従ってアプリケーション登録とLWA認証設定
+4. **Seller Central**: アプリケーション承認とRefresh Token取得
+5. **環境変数更新**: 取得した認証情報を`.env.local`に設定
+6. **本番テスト**: 設定完了後、再度接続テストで実際のAPIを確認
+
+詳細な手順は `docs/sp-api-setup.md` を参照してください。
 
 ## 使用方法
 

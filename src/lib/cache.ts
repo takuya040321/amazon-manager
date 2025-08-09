@@ -63,7 +63,27 @@ class CacheService {
 
   // 注文データ専用のメソッド
   setOrders(orders: OrdersResponse): void {
-    this.set("orders", orders, this.DEFAULT_TTL)
+    // 重複する注文を排除
+    const uniqueOrders = this.removeDuplicateOrders(orders.orders)
+    const deduplicatedResponse: OrdersResponse = {
+      ...orders,
+      orders: uniqueOrders,
+      totalCount: uniqueOrders.length,
+    }
+    this.set("orders", deduplicatedResponse, this.DEFAULT_TTL)
+  }
+
+  // 重複注文の排除
+  private removeDuplicateOrders(orders: Order[]): Order[] {
+    const seen = new Set<string>()
+    return orders.filter(order => {
+      if (seen.has(order.id)) {
+        console.warn(`Duplicate order detected and removed: ${order.id}`)
+        return false
+      }
+      seen.add(order.id)
+      return true
+    })
   }
 
   getOrders(): OrdersResponse | null {

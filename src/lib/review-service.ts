@@ -87,7 +87,19 @@ class ReviewService {
           <p><strong>注文日:</strong> ${new Date(order.purchaseDate).toLocaleDateString("ja-JP")}</p>
           <p><strong>商品:</strong></p>
           <div style="margin-left: 20px;">
-            ${order.items.map(item => `<p>• ${item.title} (数量: ${item.quantity})</p>`).join("")}
+            ${order.items.map(item => `
+              <div style="display: flex; align-items: center; margin: 10px 0; padding: 10px; background-color: #fff; border-radius: 8px; border: 1px solid #ddd;">
+                ${item.imageUrl ? `
+                  <img src="${item.imageUrl}" alt="${item.title}" 
+                       style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 15px;">
+                ` : ''}
+                <div>
+                  <strong>${item.title}</strong><br>
+                  <span style="color: #666;">数量: ${item.quantity}個</span><br>
+                  <span style="color: #FF9900; font-weight: bold;">¥${item.price.toLocaleString()}</span>
+                </div>
+              </div>
+            `).join("")}
           </div>
         </div>
         
