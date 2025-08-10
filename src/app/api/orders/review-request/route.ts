@@ -5,7 +5,7 @@ import { cacheService } from "@/lib/cache"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { orderIds, type = "batch" } = body
+    const { orderIds, type = "batch", customTemplate } = body
 
     if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     if (type === "batch") {
       // 一斉送信
-      const batchResult = await reviewService.sendBatchReviewRequests(eligibleOrders)
+      const batchResult = await reviewService.sendBatchReviewRequests(eligibleOrders, customTemplate)
       
       return NextResponse.json({
         success: true,
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const reviewRequest = await reviewService.sendReviewRequest(eligibleOrders[0])
+      const reviewRequest = await reviewService.sendReviewRequest(eligibleOrders[0], customTemplate)
       
       return NextResponse.json({
         success: reviewRequest.status === "sent",

@@ -1,6 +1,22 @@
 import { Order, ReviewRequest, ReviewRequestBatch } from "@/types/order"
 import { cacheService } from "./cache"
 
+// Amazon商品レビューURLを生成するヘルパー関数
+function generateAmazonReviewUrl(asin: string, marketplaceId: string = "A1VC38T7YXB528"): string {
+  if (!asin) return "https://www.amazon.co.jp/your-orders"
+  
+  // 日本のAmazon商品レビュー投稿URL
+  return `https://www.amazon.co.jp/review/create-review?ie=UTF8&channel=glance-detail&asin=${asin}`
+}
+
+// 複数商品用の注文レビューURL（注文履歴ページ）
+function generateOrderReviewUrl(amazonOrderId?: string): string {
+  if (amazonOrderId) {
+    return `https://www.amazon.co.jp/your-orders`
+  }
+  return "https://www.amazon.co.jp/your-orders"
+}
+
 interface EmailProvider {
   sendEmail(params: {
     to: string
@@ -64,22 +80,39 @@ class ReviewService {
     })
   }
 
-  // レビュー依頼メールの生成
-  generateReviewRequestEmail(order: Order): { subject: string; html: string; text: string } {
+  // レビュー依頼メールの生成（カスタマイズ対応）
+  generateReviewRequestEmail(
+    order: Order, 
+    customTemplate?: {
+      subject?: string;
+      greeting?: string;
+      mainMessage?: string;
+      callToAction?: string;
+      footer?: string;
+    }
+  ): { subject: string; html: string; text: string } {
     const customerName = order.customer.name || order.customer.buyerInfo?.buyerName || "お客様"
     const itemsList = order.items
       .map(item => `• ${item.title} (数量: ${item.quantity})`)
       .join("\n")
 
-    const subject = `【レビューのお願い】${order.amazonOrderId} - ご購入商品のレビューをお願いいたします`
+    // カスタマイズ可能な文言
+    const subject = customTemplate?.subject || 
+      `【レビューのお願い】${order.amazonOrderId} - ご購入商品のレビューをお願いいたします`
+    
+    const greeting = customTemplate?.greeting || 
+      "いつもご利用いただき、ありがとうございます。"
+    
+    const mainMessage = customTemplate?.mainMessage || 
+      `${customerName}様にご購入いただいた商品はいかがでしたでしょうか？`
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #FF9900;">レビューのお願い</h2>
         
-        <p>いつもご利用いただき、ありがとうございます。</p>
+        <p>${greeting}</p>
         
-        <p>${customerName}様にご購入いただいた商品はいかがでしたでしょうか？</p>
+        <p>${mainMessage}</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-left: 4px solid #FF9900;">
           <h3 style="margin-top: 0;">ご注文内容</h3>
@@ -87,29 +120,37 @@ class ReviewService {
           <p><strong>注文日:</strong> ${new Date(order.purchaseDate).toLocaleDateString("ja-JP")}</p>
           <p><strong>商品:</strong></p>
           <div style="margin-left: 20px;">
-            ${order.items.map(item => `
+            ${order.items.map(item => {
+              const reviewUrl = generateAmazonReviewUrl(item.asin)
+              return `
               <div style="display: flex; align-items: center; margin: 10px 0; padding: 10px; background-color: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 ${item.imageUrl ? `
                   <img src="${item.imageUrl}" alt="${item.title}" 
                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 15px;">
                 ` : ''}
-                <div>
+                <div style="flex-grow: 1;">
                   <strong>${item.title}</strong><br>
                   <span style="color: #666;">数量: ${item.quantity}個</span><br>
-                  <span style="color: #FF9900; font-weight: bold;">¥${item.price.toLocaleString()}</span>
+                  <span style="color: #FF9900; font-weight: bold;">¥${item.price.toLocaleString()}</span><br>
+                  <div style="margin-top: 8px;">
+                    <a href="${reviewUrl}" 
+                       style="background-color: #FF9900; color: white; padding: 6px 12px; text-decoration: none; border-radius: 3px; font-size: 12px; display: inline-block;">
+                      この商品のレビューを書く
+                    </a>
+                  </div>
                 </div>
               </div>
-            `).join("")}
+            `}).join("")}
           </div>
         </div>
         
-        <p>お時間があるときに、ぜひ商品のレビューをお書きいただけますでしょうか？</p>
+        <p>${customTemplate?.callToAction || "お時間があるときに、ぜひ商品のレビューをお書きいただけますでしょうか？"}</p>
         <p>お客様の貴重なご意見は、他のお客様の参考になり、私たちの商品改善にも大変役立ちます。</p>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://www.amazon.co.jp/your-orders" 
+          <a href="${generateOrderReviewUrl(order.amazonOrderId)}" 
              style="background-color: #FF9900; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
-            レビューを書く
+            注文履歴でレビューを書く
           </a>
         </div>
         
@@ -120,7 +161,7 @@ class ReviewService {
         
         <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
         <p style="color: #999; font-size: 12px; text-align: center;">
-          今後このようなメールを希望されない場合は、お手数ですがご連絡ください。
+          ${customTemplate?.footer || "今後このようなメールを希望されない場合は、お手数ですがご連絡ください。"}
         </p>
       </div>
     `
@@ -128,20 +169,24 @@ class ReviewService {
     const text = `
 レビューのお願い
 
-いつもご利用いただき、ありがとうございます。
+${greeting}
 
-${customerName}様にご購入いただいた商品はいかがでしたでしょうか？
+${mainMessage}
 
 ご注文内容:
 注文番号: ${order.amazonOrderId}
 注文日: ${new Date(order.purchaseDate).toLocaleDateString("ja-JP")}
 商品:
-${itemsList}
+${order.items.map(item => {
+        const reviewUrl = generateAmazonReviewUrl(item.asin)
+        return `• ${item.title} (数量: ${item.quantity}) - レビューURL: ${reviewUrl}`
+      }).join("\n")}
 
-お時間があるときに、ぜひ商品のレビューをお書きいただけますでしょうか？
+${customTemplate?.callToAction || "お時間があるときに、ぜひ商品のレビューをお書きいただけますでしょうか？"}
 お客様の貴重なご意見は、他のお客様の参考になり、私たちの商品改善にも大変役立ちます。
 
-レビューを書くには: https://www.amazon.co.jp/your-orders
+各商品のレビューは上記のURLから直接投稿できます。
+注文履歴からレビューを書くには: ${generateOrderReviewUrl(order.amazonOrderId)}
 
 ※このメールは注文完了後に自動送信されています。
 ※レビューの投稿は任意です。ご無理をなさる必要はありません。
@@ -151,13 +196,22 @@ ${itemsList}
   }
 
   // 単一の注文に対するレビュー依頼送信
-  async sendReviewRequest(order: Order): Promise<ReviewRequest> {
+  async sendReviewRequest(
+    order: Order, 
+    customTemplate?: {
+      subject?: string;
+      greeting?: string;
+      mainMessage?: string;
+      callToAction?: string;
+      footer?: string;
+    }
+  ): Promise<ReviewRequest> {
     const customerEmail = order.customer.email || order.customer.buyerInfo?.buyerEmail
     if (!customerEmail) {
       throw new Error("顧客のメールアドレスが見つかりません")
     }
 
-    const email = this.generateReviewRequestEmail(order)
+    const email = this.generateReviewRequestEmail(order, customTemplate)
     
     try {
       const result = await this.emailProvider.sendEmail({
@@ -205,7 +259,16 @@ ${itemsList}
   }
 
   // 複数注文の一斉レビュー依頼送信
-  async sendBatchReviewRequests(orders: Order[]): Promise<ReviewRequestBatch> {
+  async sendBatchReviewRequests(
+    orders: Order[], 
+    customTemplate?: {
+      subject?: string;
+      greeting?: string;
+      mainMessage?: string;
+      callToAction?: string;
+      footer?: string;
+    }
+  ): Promise<ReviewRequestBatch> {
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const batch: ReviewRequestBatch = {
       id: batchId,
@@ -223,7 +286,7 @@ ${itemsList}
       const orderBatch = orders.slice(i, i + batchSize)
       
       const promises = orderBatch.map(order => 
-        this.sendReviewRequest(order).catch(error => ({
+        this.sendReviewRequest(order, customTemplate).catch(error => ({
           orderId: order.id,
           customerEmail: order.customer.email || order.customer.buyerInfo?.buyerEmail || "",
           customerName: order.customer.name || order.customer.buyerInfo?.buyerName,
