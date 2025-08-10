@@ -268,7 +268,7 @@ export default function OrdersPage() {
               Amazon注文からレビュー依頼を送信（商品詳細・依頼可能性込みで表示）
               <br />
               <small className="text-xs text-green-600">
-                高速化: Orders + Catalog Items + Solicitation Actions APIを並列処理で事前取得（3倍高速化）
+                高速化: Orders + Catalog Items + Solicitation Actions APIを並列処理で事前取得（100件・3倍高速化）
               </small>
               {lastUpdated && (
                 <span className="ml-2 text-sm">
@@ -448,7 +448,7 @@ export default function OrdersPage() {
                     Orders + Catalog Items + Solicitation Actions APIを並列処理で取得中
                   </p>
                   <p className="text-xs text-green-600 mt-1">
-                    ✅ 並列処理により従来の3倍高速化 (3件ずつバッチ処理)
+                    ✅ 並列処理により従来の3倍高速化 (100件を3件ずつバッチ処理)
                   </p>
                   <p className="text-xs text-blue-600 mt-1">
                     完了後は手動でのレビュー依頼状態確認が不要になります

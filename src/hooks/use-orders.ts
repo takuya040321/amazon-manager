@@ -158,7 +158,7 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     try {
       const searchParams = new URLSearchParams()
       searchParams.set("refresh", "true")
-      searchParams.set("maxResults", "10") // パフォーマンステスト用に10件に制限
+      searchParams.set("maxResults", "100") // 100件表示に変更
       
       const url = `/api/orders?${searchParams.toString()}`
       
