@@ -11,6 +11,14 @@ interface UseOrdersState {
   totalCount: number
   nextToken?: string | null
   hasMorePages: boolean
+  // バックグラウンド取得状態
+  isBackgroundLoading: boolean
+  backgroundProgress: {
+    current: number
+    total: number
+    status: string
+  }
+  cachedTotalCount: number
 }
 
 interface UseOrdersActions {
@@ -29,9 +37,18 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     totalCount: 0,
     nextToken: null,
     hasMorePages: false,
+    isBackgroundLoading: false,
+    backgroundProgress: {
+      current: 0,
+      total: 0,
+      status: "待機中"
+    },
+    cachedTotalCount: 0,
   })
 
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const backgroundJobRef = useRef<{ cancel: boolean }>({ cancel: false })
+  const allOrdersCacheRef = useRef<Order[]>([])
 
   const refreshOrders = useCallback(async (dateParams?: { createdAfter?: string; createdBefore?: string }) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
@@ -81,8 +98,32 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
   }, [])
 
   const loadMoreOrders = useCallback(async () => {
-    if (!state.nextToken || state.isLoading) return
-
+    if (state.isLoading) return
+    
+    // キャッシュから優先的に表示
+    const currentDisplayCount = state.orders.length
+    const availableInCache = allOrdersCacheRef.current.length
+    
+    if (availableInCache > currentDisplayCount) {
+      // キャッシュから即座に表示
+      const additionalCount = Math.min(100, availableInCache - currentDisplayCount)
+      const additionalOrders = allOrdersCacheRef.current
+        .slice(currentDisplayCount, currentDisplayCount + additionalCount)
+      
+      setState(prev => ({
+        ...prev,
+        orders: [...prev.orders, ...additionalOrders],
+        totalCount: prev.totalCount + additionalOrders.length,
+        hasMorePages: availableInCache > currentDisplayCount + additionalCount || !!prev.nextToken
+      }))
+      
+      console.log(`[DEBUG] キャッシュから${additionalOrders.length}件を即座に表示`)
+      return
+    }
+    
+    // キャッシュに十分なデータがない場合はAPI取得
+    if (!state.nextToken) return
+    
     setState(prev => ({ ...prev, isLoading: true }))
 
     try {
@@ -106,6 +147,11 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
           new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
         )
         
+        // キャッシュも更新
+        const cacheExistingIds = new Set(allOrdersCacheRef.current.map(order => order.id))
+        const newCacheOrders = newOrders.filter(order => !cacheExistingIds.has(order.id))
+        allOrdersCacheRef.current = [...allOrdersCacheRef.current, ...newCacheOrders]
+        
         return {
           ...prev,
           orders: allOrders,
@@ -115,6 +161,7 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
           totalCount: (prev.totalCount || 0) + newOrders.length,
           nextToken: ordersData.nextToken,
           hasMorePages: !!ordersData.nextToken,
+          cachedTotalCount: allOrdersCacheRef.current.length
         }
       })
     } catch (error) {
@@ -124,12 +171,18 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         error: error instanceof Error ? error.message : "未知のエラーが発生しました",
       }))
     }
-  }, [state.nextToken, state.isLoading])
+  }, [state.nextToken, state.isLoading, state.orders.length])
 
   const filterByDateRange = useCallback(async (startDate?: string, endDate?: string) => {
     const dateParams: { createdAfter?: string; createdBefore?: string } = {}
     if (startDate) dateParams.createdAfter = startDate
     if (endDate) dateParams.createdBefore = endDate
+    
+    // 既存のバックグラウンド処理をキャンセル
+    backgroundJobRef.current.cancel = true
+    
+    // キャッシュをクリア（日付フィルタの場合は別データセット）
+    allOrdersCacheRef.current = []
     
     await refreshOrders(dateParams)
   }, [])
@@ -182,7 +235,8 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
       )
       
-      setState({
+      setState(prev => ({
+        ...prev,
         orders: sortedOrders,
         isLoading: false,
         error: null,
@@ -190,7 +244,16 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         totalCount: sortedOrders.length,
         nextToken: ordersData.nextToken,
         hasMorePages: !!ordersData.nextToken,
-      })
+      }))
+      
+      // キャッシュを更新
+      allOrdersCacheRef.current = [...sortedOrders]
+      
+      // バックグラウンド取得を開始
+      if (ordersData.nextToken && sortedOrders.length >= 100) {
+        console.log("[DEBUG] バックグラウンドでの追加データ取得を開始")
+        startBackgroundFetching(ordersData.nextToken)
+      }
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -200,26 +263,135 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     }
   }, [])
 
-  // リアルタイム更新のためのサイレントリフレッシュ（無効化）
-  const silentRefresh = useCallback(async () => {
-    // 定期的なAPI呼び出しを無効化
-    console.log("[DEBUG] サイレントリフレッシュを無効化しました")
+  // バックグラウンドでの追加データ取得
+  const startBackgroundFetching = useCallback(async (initialNextToken: string, dateParams?: { createdAfter?: string; createdBefore?: string }) => {
+    // 既に実行中の場合はキャンセル
+    backgroundJobRef.current.cancel = true
+    await new Promise(resolve => setTimeout(resolve, 100))
+    backgroundJobRef.current = { cancel: false }
+    
+    setState(prev => ({
+      ...prev,
+      isBackgroundLoading: true,
+      backgroundProgress: {
+        current: prev.totalCount,
+        total: 0,
+        status: "追加データ取得中..."
+      }
+    }))
+    
+    let nextToken = initialNextToken
+    let pageCount = 1
+    
+    try {
+      while (nextToken && !backgroundJobRef.current.cancel) {
+        console.log(`[DEBUG] バックグラウンド取得 - ページ${pageCount}を取得中...`)
+        
+        setState(prev => ({
+          ...prev,
+          backgroundProgress: {
+            ...prev.backgroundProgress,
+            status: `追加データ取得中... (ページ${pageCount})`
+          }
+        }))
+        
+        const searchParams = new URLSearchParams()
+        searchParams.set("nextToken", nextToken)
+        if (dateParams?.createdAfter) {
+          searchParams.set("createdAfter", dateParams.createdAfter)
+        }
+        if (dateParams?.createdBefore) {
+          searchParams.set("createdBefore", dateParams.createdBefore)
+        }
+        
+        const url = `/api/orders?${searchParams.toString()}`
+        const response = await fetch(url)
+        
+        if (!response.ok) {
+          console.error(`[DEBUG] バックグラウンド取得エラー - ページ${pageCount}:`, response.statusText)
+          break
+        }
+        
+        const ordersData: OrdersResponse = await response.json()
+        
+        if (!ordersData.orders || ordersData.orders.length === 0) {
+          console.log(`[DEBUG] バックグラウンド取得完了 - データなし`)
+          break
+        }
+        
+        // キャッシュに追加
+        const newOrders = ordersData.orders.filter(order => 
+          !allOrdersCacheRef.current.some(cached => cached.id === order.id)
+        )
+        
+        allOrdersCacheRef.current = [...allOrdersCacheRef.current, ...newOrders]
+        
+        setState(prev => ({
+          ...prev,
+          cachedTotalCount: allOrdersCacheRef.current.length,
+          backgroundProgress: {
+            current: allOrdersCacheRef.current.length,
+            total: 0,
+            status: `${allOrdersCacheRef.current.length}件をキャッシュ済み`
+          }
+        }))
+        
+        console.log(`[DEBUG] バックグラウンド - ページ${pageCount}: ${newOrders.length}件追加 (累計キャッシュ: ${allOrdersCacheRef.current.length}件)`)
+        
+        nextToken = ordersData.nextToken
+        pageCount++
+        
+        // レート制限対応
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      }
+    } catch (error) {
+      console.error("[DEBUG] バックグラウンド取得エラー:", error)
+    } finally {
+      setState(prev => ({
+        ...prev,
+        isBackgroundLoading: false,
+        backgroundProgress: {
+          current: allOrdersCacheRef.current.length,
+          total: allOrdersCacheRef.current.length,
+          status: `完了 - ${allOrdersCacheRef.current.length}件をキャッシュ`
+        }
+      }))
+      
+      console.log(`[DEBUG] バックグラウンド取得完了: 総計${allOrdersCacheRef.current.length}件をキャッシュ`)
+    }
   }, [])
 
-  // ポーリング開始・停止
-  const startPolling = useCallback(() => {
-    if (pollingIntervalRef.current) return
+  // キャッシュから日付範囲でフィルタリング
+  const getFilteredOrdersFromCache = useCallback((startDate?: string, endDate?: string): Order[] => {
+    if (!startDate && !endDate) {
+      return allOrdersCacheRef.current
+    }
     
-    console.log("[DEBUG] リアルタイム更新ポーリング開始")
-    pollingIntervalRef.current = setInterval(silentRefresh, 5000) // 5秒間隔
-  }, [silentRefresh])
+    return allOrdersCacheRef.current.filter(order => {
+      const orderDate = new Date(order.purchaseDate)
+      
+      if (startDate) {
+        const start = new Date(startDate)
+        if (orderDate < start) return false
+      }
+      
+      if (endDate) {
+        const end = new Date(endDate)
+        end.setHours(23, 59, 59, 999) // その日の終わりまで含める
+        if (orderDate > end) return false
+      }
+      
+      return true
+    })
+  }, [])
 
-  const stopPolling = useCallback(() => {
+  // クリーンアップ
+  const cleanup = useCallback(() => {
     if (pollingIntervalRef.current) {
-      console.log("[DEBUG] リアルタイム更新ポーリング停止")
       clearInterval(pollingIntervalRef.current)
       pollingIntervalRef.current = null
     }
+    backgroundJobRef.current.cancel = true
   }, [])
 
   // 初回ロード時にデータを取得
@@ -227,12 +399,10 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     loadInitialData()
   }, [])
 
-  // データ取得後にポーリング開始（無効化）
+  // クリーンアップ用のuseEffect
   useEffect(() => {
-    // 定期的なポーリングを無効化
-    console.log("[DEBUG] 定期的なポーリングを無効化しました")
-    return () => stopPolling()
-  }, [stopPolling])
+    return () => cleanup()
+  }, [cleanup])
 
   return {
     ...state,
@@ -240,5 +410,7 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     getEligibleOrdersForReview,
     loadMoreOrders,
     filterByDateRange,
+    getFilteredOrdersFromCache,
+    startBackgroundFetching,
   }
 }

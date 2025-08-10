@@ -232,7 +232,8 @@ class AmazonApiService {
         }
 
         // ページごとに商品詳細も並列取得
-        const maxOrdersToProcess = Math.min(10, Math.min(remainingNeeded, response.payload.Orders.length))
+        const remainingNeeded = params.totalLimit - totalFetched
+        const maxOrdersToProcess = Math.min(100, Math.min(remainingNeeded, response.payload.Orders.length))
         const pageOrders = response.payload.Orders.slice(0, maxOrdersToProcess)
         console.log(`[DEBUG] ページ${page}: ${pageOrders.length}件を並列処理で取得予定`)
         const ordersWithItems = await this.enrichOrdersWithProductDetails(pageOrders)
