@@ -237,8 +237,15 @@ class AmazonApiService {
     orderStatuses?: string[]
     maxResultsPerPage?: number
     nextToken?: string
+    totalLimit?: number
   }): Promise<OrdersResponse> {
     try {
+      // totalLimitが指定されている場合は自動ページネーション
+      if (params?.totalLimit && params.totalLimit > 100 && !params.nextToken) {
+        return await this.getOrdersWithPagination(params)
+      }
+
+      // 通常の単一ページ取得
       const apiParams: Record<string, string> = {
         MarketplaceIds: this.config.marketplace,
       }
@@ -251,38 +258,9 @@ class AmazonApiService {
 
       const response = await this.makeApiRequest("/orders/v0/orders", apiParams)
       
+      const orders = this.parseOrdersResponse(response.payload.Orders)
 
-      // 初期表示用の簡易処理（商品詳細は後で取得）
-      const orders: Order[] = response.payload.Orders.map((order: any) => ({
-        id: order.AmazonOrderId,
-        amazonOrderId: order.AmazonOrderId,
-        purchaseDate: order.PurchaseDate,
-        orderStatus: ORDER_STATUS_MAP[order.OrderStatus as keyof typeof ORDER_STATUS_MAP] || order.OrderStatus,
-        fulfillmentChannel: order.FulfillmentChannel === "AFN" ? "AFN" : "MFN",
-        salesChannel: order.SalesChannel || "Amazon.co.jp",
-        totalAmount: parseFloat(order.OrderTotal?.Amount || "0"),
-        currency: order.OrderTotal?.CurrencyCode || "JPY",
-        numberOfItemsShipped: order.NumberOfItemsShipped || 0,
-        numberOfItemsUnshipped: order.NumberOfItemsUnshipped || 0,
-        customer: {
-          name: order.BuyerInfo?.BuyerName,
-          email: order.BuyerInfo?.BuyerEmail,
-          buyerInfo: order.BuyerInfo,
-        },
-        items: [{
-          id: "loading",
-          title: "商品情報を読み込み中...",
-          asin: "",
-          quantity: 1,
-          price: 0,
-          imageUrl: "",
-        }],
-        shippingAddress: order.DefaultShipFromLocationAddress,
-        reviewRequestSent: false,
-        reviewRequestStatus: "pending",
-      }))
-
-      // 商品詳細は非同期で後から取得（バックグラウンド処理）
+      // 商品詳細は非同期で後から取得
       setTimeout(() => {
         this.loadOrderItemsInBackground(orders)
       }, 1000)
@@ -297,6 +275,111 @@ class AmazonApiService {
       console.error("Failed to get orders:", error)
       throw new Error("注文データの取得に失敗しました")
     }
+  }
+
+  // 自動ページネーション機能（複数ページを自動取得・結合）
+  private async getOrdersWithPagination(params: {
+    createdAfter?: string
+    createdBefore?: string
+    orderStatuses?: string[]
+    maxResultsPerPage?: number
+    totalLimit: number
+  }): Promise<OrdersResponse> {
+    const allOrders: Order[] = []
+    let nextToken: string | undefined = undefined
+    let totalFetched = 0
+    const pageSize = 100 // 毎回最大100件取得
+    const maxPages = Math.ceil(params.totalLimit / pageSize)
+
+    console.log(`[DEBUG] 自動ページネーション開始: 目標${params.totalLimit}件, 最大${maxPages}ページ`)
+
+    for (let page = 1; page <= maxPages && totalFetched < params.totalLimit; page++) {
+      try {
+        const apiParams: Record<string, string> = {
+          MarketplaceIds: this.config.marketplace,
+          MaxResultsPerPage: pageSize.toString(),
+        }
+
+        if (params.createdAfter) apiParams.CreatedAfter = params.createdAfter
+        if (params.createdBefore) apiParams.CreatedBefore = params.createdBefore
+        if (params.orderStatuses) apiParams.OrderStatuses = params.orderStatuses.join(",")
+        if (nextToken) apiParams.NextToken = nextToken
+
+        console.log(`[DEBUG] ページ${page}/${maxPages}を取得中...`)
+        const response = await this.makeApiRequest("/orders/v0/orders", apiParams)
+        
+        if (!response.payload.Orders || response.payload.Orders.length === 0) {
+          console.log(`[DEBUG] ページ${page}: データなし、取得終了`)
+          break
+        }
+
+        const orders = this.parseOrdersResponse(response.payload.Orders)
+        const remainingNeeded = params.totalLimit - totalFetched
+        const ordersToAdd = orders.slice(0, remainingNeeded)
+        
+        allOrders.push(...ordersToAdd)
+        totalFetched += ordersToAdd.length
+
+        console.log(`[DEBUG] ページ${page}: ${ordersToAdd.length}件取得 (累計: ${totalFetched}/${params.totalLimit})`)
+
+        nextToken = response.payload.NextToken
+        if (!nextToken || totalFetched >= params.totalLimit) {
+          console.log(`[DEBUG] 取得完了: ${totalFetched}件`)
+          break
+        }
+
+        // API制限対応: 0.5秒間隔
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+      } catch (error) {
+        console.error(`[DEBUG] ページ${page}の取得でエラー:`, error)
+        break
+      }
+    }
+
+    // 商品詳細は非同期で後から取得
+    setTimeout(() => {
+      this.loadOrderItemsInBackground(allOrders)
+    }, 1000)
+
+    return {
+      orders: allOrders,
+      nextToken: nextToken,
+      totalCount: totalFetched,
+      lastUpdated: new Date().toISOString(),
+    }
+  }
+
+  // 注文データのパース（共通処理）
+  private parseOrdersResponse(ordersData: any[]): Order[] {
+    return ordersData.map((order: any) => ({
+      id: order.AmazonOrderId,
+      amazonOrderId: order.AmazonOrderId,
+      purchaseDate: order.PurchaseDate,
+      orderStatus: ORDER_STATUS_MAP[order.OrderStatus as keyof typeof ORDER_STATUS_MAP] || order.OrderStatus,
+      fulfillmentChannel: order.FulfillmentChannel === "AFN" ? "AFN" : "MFN",
+      salesChannel: order.SalesChannel || "Amazon.co.jp",
+      totalAmount: parseFloat(order.OrderTotal?.Amount || "0"),
+      currency: order.OrderTotal?.CurrencyCode || "JPY",
+      numberOfItemsShipped: order.NumberOfItemsShipped || 0,
+      numberOfItemsUnshipped: order.NumberOfItemsUnshipped || 0,
+      customer: {
+        name: order.BuyerInfo?.BuyerName,
+        email: order.BuyerInfo?.BuyerEmail,
+        buyerInfo: order.BuyerInfo,
+      },
+      items: [{
+        id: "loading",
+        title: "商品情報を読み込み中...",
+        asin: "",
+        quantity: 1,
+        price: 0,
+        imageUrl: "",
+      }],
+      shippingAddress: order.DefaultShipFromLocationAddress,
+      reviewRequestSent: false,
+      reviewRequestStatus: "pending",
+    }))
   }
 
   // バックグラウンドで商品詳細を取得

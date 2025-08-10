@@ -156,7 +156,7 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     try {
       const searchParams = new URLSearchParams()
       searchParams.set("refresh", "true")
-      searchParams.set("maxResults", "100")
+      searchParams.set("maxResults", "500")
       
       const url = `/api/orders?${searchParams.toString()}`
       

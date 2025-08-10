@@ -223,7 +223,7 @@ export default function OrdersPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">レビュー依頼</h1>
             <p className="text-muted-foreground">
-              Amazon注文からレビュー依頼を送信（今日から過去1週間の最大100件を表示）
+              Amazon注文からレビュー依頼を送信（今日から過去1週間の最大500件を表示）
               {lastUpdated && (
                 <span className="ml-2 text-sm">
                   （最終更新: {new Date(lastUpdated).toLocaleString("ja-JP")}）
@@ -396,7 +396,7 @@ export default function OrdersPage() {
             {isLoading ? (
               <div className="flex items-center justify-center h-32">
                 <RefreshCw className="h-6 w-6 animate-spin mr-2" />
-                注文データを取得中...
+                注文データを取得中...（最大500件、複数ページ自動取得）
               </div>
             ) : orders.length === 0 ? (
               <div className="text-center py-8">
