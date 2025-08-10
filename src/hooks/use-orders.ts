@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Order, OrdersResponse } from "@/types/order"
 
 interface UseOrdersState {
@@ -30,6 +30,8 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     nextToken: null,
     hasMorePages: false,
   })
+
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const refreshOrders = useCallback(async (dateParams?: { createdAfter?: string; createdBefore?: string }) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
@@ -156,7 +158,7 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     try {
       const searchParams = new URLSearchParams()
       searchParams.set("refresh", "true")
-      searchParams.set("maxResults", "500")
+      searchParams.set("maxResults", "10") // パフォーマンステスト用に10件に制限
       
       const url = `/api/orders?${searchParams.toString()}`
       
@@ -198,10 +200,39 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     }
   }, [])
 
+  // リアルタイム更新のためのサイレントリフレッシュ（無効化）
+  const silentRefresh = useCallback(async () => {
+    // 定期的なAPI呼び出しを無効化
+    console.log("[DEBUG] サイレントリフレッシュを無効化しました")
+  }, [])
+
+  // ポーリング開始・停止
+  const startPolling = useCallback(() => {
+    if (pollingIntervalRef.current) return
+    
+    console.log("[DEBUG] リアルタイム更新ポーリング開始")
+    pollingIntervalRef.current = setInterval(silentRefresh, 5000) // 5秒間隔
+  }, [silentRefresh])
+
+  const stopPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      console.log("[DEBUG] リアルタイム更新ポーリング停止")
+      clearInterval(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
+  }, [])
+
   // 初回ロード時にデータを取得
   useEffect(() => {
     loadInitialData()
   }, [])
+
+  // データ取得後にポーリング開始（無効化）
+  useEffect(() => {
+    // 定期的なポーリングを無効化
+    console.log("[DEBUG] 定期的なポーリングを無効化しました")
+    return () => stopPolling()
+  }, [stopPolling])
 
   return {
     ...state,

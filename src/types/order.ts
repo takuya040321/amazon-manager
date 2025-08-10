@@ -41,11 +41,14 @@ export interface Order {
   // レビュー依頼関連
   reviewRequestSent?: boolean
   reviewRequestSentAt?: string
-  reviewRequestStatus?: "pending" | "sent" | "failed"
+  reviewRequestStatus?: "pending" | "sent" | "failed" | "eligible" | "not_eligible" | "error"
   // Amazon APIによるリアルタイム送信可能状態
   amazonEligible?: boolean
   amazonEligibilityReason?: string
   amazonEligibilityCheckedAt?: string
+  // Solicitation Actions APIによる送信可能状態（事前取得）
+  solicitationEligible?: boolean
+  solicitationReason?: string
 }
 
 export interface OrdersResponse {
