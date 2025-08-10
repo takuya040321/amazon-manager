@@ -17,6 +17,7 @@ import { RefreshCw, Eye, Package, Download, Mail, Send, ChevronLeft, ChevronRigh
 import { useOrders } from "@/hooks/use-orders"
 import { useReviewRequests } from "@/hooks/use-review-requests"
 import { useDateFilter } from "@/hooks/use-date-filter"
+import { useEligibilityCheck } from "@/hooks/use-eligibility-check"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Order } from "@/types/order"
 
@@ -51,8 +52,10 @@ export default function OrdersPage() {
     loadMoreOrders,
     filterByDateRange 
   } = useOrders()
-  const { sendBatchReviewRequests, isLoading: isReviewLoading } = useReviewRequests()
+  const { sendBatchReviewRequests, isLoading: isReviewLoading, error: reviewError } = useReviewRequests()
+  const { checkEligibility, isChecking: isEligibilityChecking, results: eligibilityResults } = useEligibilityCheck()
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
+  const [eligibilityChecked, setEligibilityChecked] = useState(false)
   
   // 日付フィルター
   const {
@@ -91,15 +94,49 @@ export default function OrdersPage() {
   const handleSendReviewRequests = async () => {
     if (selectedOrders.length === 0) return
 
+    // 注文データが読み込まれていない場合は、先に取得する
+    if (!orders || orders.length === 0) {
+      alert("⏳ 注文データを取得中です。しばらくお待ちください...")
+      await refreshOrders()
+      // データ取得後に再度チェック
+      if (!orders || orders.length === 0) {
+        alert("❌ 注文データの取得に失敗しました。画面を更新して再試行してください。")
+        return
+      }
+    }
+
     const result = await sendBatchReviewRequests(selectedOrders)
     if (result) {
-      alert(`${result.sentCount}件のレビュー依頼を送信しました（失敗: ${result.failedCount}件）`)
+      if (result.sentCount > 0) {
+        alert(`✅ ${result.sentCount}件のレビュー依頼を送信しました${result.failedCount > 0 ? `（Amazon側で対象外: ${result.failedCount}件）` : ''}`)
+      } else {
+        alert(`ℹ️ 選択した注文はすべてAmazon側で対象外と判定されました。既にレビュー依頼済み、期限切れ、または対象外カテゴリの可能性があります。`)
+      }
       setSelectedOrders([])
       refreshOrders()
+    } else if (reviewError) {
+      // エラーメッセージを表示
+      alert(`❌ ${reviewError}`)
     }
   }
 
-  const canSendReviewRequest = (order: Order): boolean => {
+  // Amazon APIで実際の送信可能状態をチェック
+  const handleCheckEligibility = async () => {
+    const eligibleOrderIds = orders
+      .filter(canSendReviewRequestBasic)
+      .map(order => order.id)
+    
+    if (eligibleOrderIds.length === 0) {
+      alert("基本条件を満たす注文がありません")
+      return
+    }
+
+    await checkEligibility(eligibleOrderIds)
+    setEligibilityChecked(true)
+  }
+
+  // 基本条件のチェック（従来のロジック）
+  const canSendReviewRequestBasic = (order: Order): boolean => {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
     const orderDate = new Date(order.purchaseDate)
@@ -112,12 +149,55 @@ export default function OrdersPage() {
     )
   }
 
+  // 実際の送信可能状態（Amazon APIの結果も考慮）
+  const canSendReviewRequest = (order: Order): boolean => {
+    const basicEligible = canSendReviewRequestBasic(order)
+    
+    if (!eligibilityChecked || !eligibilityResults) {
+      return basicEligible
+    }
+
+    const amazonEligible = eligibilityResults[order.id]?.eligible
+    return basicEligible && (amazonEligible === true)
+  }
+
+  // レビュー依頼状態の表示文字列とスタイルを取得
+  const getReviewRequestStatus = (order: Order): { text: string; className: string } => {
+    if (order.reviewRequestSent) {
+      return { text: "送信済み", className: "bg-green-100 text-green-800" }
+    }
+
+    const basicEligible = canSendReviewRequestBasic(order)
+    if (!basicEligible) {
+      return { text: "対象外", className: "bg-gray-100 text-gray-600" }
+    }
+
+    if (!eligibilityChecked || !eligibilityResults) {
+      return { text: "要確認", className: "bg-yellow-100 text-yellow-800" }
+    }
+
+    const amazonEligible = eligibilityResults[order.id]?.eligible
+    const reason = eligibilityResults[order.id]?.reason
+
+    if (amazonEligible === true) {
+      return { text: "送信可能", className: "bg-blue-100 text-blue-800" }
+    } else if (amazonEligible === false) {
+      return { 
+        text: reason?.includes("送信済み") ? "送信済み" : "対象外", 
+        className: reason?.includes("送信済み") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-600" 
+      }
+    } else {
+      return { text: "確認中", className: "bg-orange-100 text-orange-800" }
+    }
+  }
+
   const stats = {
     totalOrders: orders.length,
     totalRevenue: orders.reduce((sum, order) => sum + order.totalAmount, 0),
     averageOrderValue: orders.length > 0 ? orders.reduce((sum, order) => sum + order.totalAmount, 0) / orders.length : 0,
     processingOrders: orders.filter(order => order.orderStatus === "処理中").length,
     eligibleForReview: orders.filter(canSendReviewRequest).length,
+    needsEligibilityCheck: !eligibilityChecked ? orders.filter(canSendReviewRequestBasic).length : 0,
   }
 
   if (error) {
@@ -152,14 +232,28 @@ export default function OrdersPage() {
             </p>
           </div>
           <div className="flex gap-2">
+            {!eligibilityChecked && stats.needsEligibilityCheck > 0 && (
+              <Button 
+                onClick={handleCheckEligibility} 
+                disabled={isEligibilityChecking || isLoading}
+                className="bg-orange-600 hover:bg-orange-700"
+                title="Amazon APIで実際の送信可能状態を確認"
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${isEligibilityChecking ? "animate-spin" : ""}`} />
+                {isEligibilityChecking ? "確認中..." : `${stats.needsEligibilityCheck}件の送信可能状態を確認`}
+              </Button>
+            )}
             {selectedOrders.length > 0 && (
               <Button 
                 onClick={handleSendReviewRequests} 
-                disabled={isReviewLoading}
+                disabled={isReviewLoading || isLoading}
                 className="bg-blue-600 hover:bg-blue-700"
+                title={isLoading ? "注文データを読み込み中です" : ""}
               >
                 <Send className="mr-2 h-4 w-4" />
-                {isReviewLoading ? "送信中..." : `選択した${selectedOrders.length}件にレビュー依頼`}
+                {isReviewLoading ? "送信中..." : 
+                 isLoading ? "読み込み中..." : 
+                 `選択した${selectedOrders.length}件にレビュー依頼`}
               </Button>
             )}
             <Button variant="outline">
@@ -295,7 +389,7 @@ export default function OrdersPage() {
           <CardHeader>
             <CardTitle>レビュー依頼対象注文</CardTitle>
             <CardDescription>
-              発送済み・30日以内・未送信の注文（チェックした注文にレビュー依頼を送信できます）
+              発送済み・30日以内・未送信の注文（{eligibilityChecked ? "Amazon API確認済み" : "「送信可能状態を確認」ボタンでAmazon APIチェック推奨"}）
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -305,8 +399,14 @@ export default function OrdersPage() {
                 注文データを取得中...
               </div>
             ) : orders.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                注文データが見つかりません
+              <div className="text-center py-8">
+                <div className="text-muted-foreground mb-4">
+                  注文データが見つかりません
+                </div>
+                <Button onClick={() => refreshOrders()} variant="outline">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  注文データを取得する
+                </Button>
               </div>
             ) : (
               <Table>
@@ -395,13 +495,14 @@ export default function OrdersPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          {order.reviewRequestSent ? (
-                            <Badge className="bg-green-100 text-green-800">送信済み</Badge>
-                          ) : eligible ? (
-                            <Badge className="bg-blue-100 text-blue-800">送信可能</Badge>
-                          ) : (
-                            <Badge variant="outline">対象外</Badge>
-                          )}
+                          {(() => {
+                            const status = getReviewRequestStatus(order)
+                            return (
+                              <Badge className={status.className} title={eligibilityResults?.[order.id]?.reason}>
+                                {status.text}
+                              </Badge>
+                            )
+                          })()}
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="sm">

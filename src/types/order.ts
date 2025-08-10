@@ -42,6 +42,10 @@ export interface Order {
   reviewRequestSent?: boolean
   reviewRequestSentAt?: string
   reviewRequestStatus?: "pending" | "sent" | "failed"
+  // Amazon APIによるリアルタイム送信可能状態
+  amazonEligible?: boolean
+  amazonEligibilityReason?: string
+  amazonEligibilityCheckedAt?: string
 }
 
 export interface OrdersResponse {

@@ -1,4 +1,6 @@
 import { Order, OrdersResponse } from "@/types/order"
+import fs from 'fs'
+import path from 'path'
 
 interface CacheEntry<T> {
   data: T
@@ -9,6 +11,7 @@ interface CacheEntry<T> {
 class CacheService {
   private cache = new Map<string, CacheEntry<any>>()
   private readonly DEFAULT_TTL = 30 * 60 * 1000 // 30分
+  private readonly CACHE_FILE = path.join(process.cwd(), '.cache', 'orders.json')
 
   set<T>(key: string, data: T, ttl: number = this.DEFAULT_TTL): void {
     const now = Date.now()
@@ -51,6 +54,49 @@ class CacheService {
     this.cache.clear()
   }
 
+  private ensureCacheDir(): void {
+    const cacheDir = path.dirname(this.CACHE_FILE)
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true })
+    }
+  }
+
+  private writeToFile(data: OrdersResponse): void {
+    try {
+      this.ensureCacheDir()
+      const cacheEntry: CacheEntry<OrdersResponse> = {
+        data,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + (60 * 60 * 1000) // 1時間
+      }
+      fs.writeFileSync(this.CACHE_FILE, JSON.stringify(cacheEntry, null, 2))
+    } catch (error) {
+      console.error('Failed to write cache to file:', error)
+    }
+  }
+
+  private readFromFile(): OrdersResponse | null {
+    try {
+      if (!fs.existsSync(this.CACHE_FILE)) {
+        return null
+      }
+
+      const fileContent = fs.readFileSync(this.CACHE_FILE, 'utf-8')
+      const cacheEntry: CacheEntry<OrdersResponse> = JSON.parse(fileContent)
+
+      // 期限切れチェック
+      if (Date.now() > cacheEntry.expiresAt) {
+        fs.unlinkSync(this.CACHE_FILE)
+        return null
+      }
+
+      return cacheEntry.data
+    } catch (error) {
+      console.error('Failed to read cache from file:', error)
+      return null
+    }
+  }
+
   // 期限切れのエントリを削除
   cleanup(): void {
     const now = Date.now()
@@ -71,6 +117,7 @@ class CacheService {
       totalCount: uniqueOrders.length,
     }
     this.set("orders", deduplicatedResponse, this.DEFAULT_TTL)
+    this.writeToFile(deduplicatedResponse) // ファイルにも保存
   }
 
   // 重複注文の排除
@@ -87,7 +134,21 @@ class CacheService {
   }
 
   getOrders(): OrdersResponse | null {
-    return this.get<OrdersResponse>("orders")
+    // まずメモリキャッシュから取得を試みる
+    const memoryCache = this.get<OrdersResponse>("orders")
+    if (memoryCache) {
+      return memoryCache
+    }
+
+    // メモリキャッシュにない場合は、ファイルから読み込む
+    const fileCache = this.readFromFile()
+    if (fileCache) {
+      // ファイルからデータを取得できた場合、メモリキャッシュにも保存
+      this.set("orders", fileCache, this.DEFAULT_TTL)
+      return fileCache
+    }
+
+    return null
   }
 
   updateOrderInCache(updatedOrder: Order): void {

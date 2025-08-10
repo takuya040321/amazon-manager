@@ -191,6 +191,46 @@ class AmazonApiService {
     return { payload: {} }
   }
 
+  // 汎用的な認証済みAPIリクエストメソッド
+  async makeAuthenticatedRequest(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    endpoint: string,
+    body?: any,
+    customHost?: string
+  ): Promise<Response> {
+    // モックモードの場合は模擬レスポンスを返す
+    if (this.config.useMockData) {
+      const mockResponse = new Response(JSON.stringify({ _links: { actions: [] } }), {
+        status: method === 'POST' ? 201 : 200,
+        statusText: 'OK',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      return mockResponse
+    }
+
+    const accessToken = await this.getAccessToken()
+    const baseUrl = customHost ? `https://${customHost}` : this.config.baseUrl
+    const url = `${baseUrl}${endpoint}`
+
+    const headers: Record<string, string> = {
+      "Authorization": `Bearer ${accessToken}`,
+      "x-amz-access-token": accessToken,
+      "Content-Type": "application/json",
+      "User-Agent": "Amazon Manager/1.0",
+    }
+
+    const requestOptions: RequestInit = {
+      method,
+      headers,
+    }
+
+    if (body && (method === 'POST' || method === 'PUT')) {
+      requestOptions.body = JSON.stringify(body)
+    }
+
+    return fetch(url, requestOptions)
+  }
+
   async getOrders(params?: {
     createdAfter?: string
     createdBefore?: string

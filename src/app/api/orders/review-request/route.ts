@@ -16,7 +16,10 @@ export async function POST(request: NextRequest) {
 
     // キャッシュから注文データを取得
     const cachedOrders = cacheService.getOrders()
+    console.log("[DEBUG] Cache check - cachedOrders:", cachedOrders ? `Found ${cachedOrders.orders.length} orders` : "null/undefined")
+    
     if (!cachedOrders) {
+      console.log("[DEBUG] No cached orders found, returning 404")
       return NextResponse.json(
         { error: "注文データが見つかりません。先に注文データを取得してください。" },
         { status: 404 }
@@ -24,11 +27,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 指定された注文IDの注文を取得
+    console.log("[DEBUG] Requested orderIds:", orderIds)
+    console.log("[DEBUG] Available order IDs:", cachedOrders.orders.map(o => o.id).slice(0, 5), "...")
+    
     const targetOrders = cachedOrders.orders.filter(order => 
       orderIds.includes(order.id)
     )
 
+    console.log("[DEBUG] Found target orders:", targetOrders.length)
+
     if (targetOrders.length === 0) {
+      console.log("[DEBUG] No target orders found with requested IDs")
       return NextResponse.json(
         { error: "指定された注文IDの注文が見つかりません" },
         { status: 404 }
@@ -56,7 +65,9 @@ export async function POST(request: NextRequest) {
         success: true,
         type: "batch",
         result: batchResult,
-        message: `${batchResult.sentCount}件のレビュー依頼を送信しました（失敗: ${batchResult.failedCount}件）`
+        message: batchResult.sentCount > 0 
+          ? `${batchResult.sentCount}件のレビュー依頼を送信しました${batchResult.failedCount > 0 ? `（Amazon側で対象外: ${batchResult.failedCount}件）` : ''}`
+          : `選択した注文はすべてAmazon側で対象外と判定されました。既にレビュー依頼済み、期限切れ、または対象外カテゴリです。`
       })
     } else {
       // 個別送信（1件のみ）

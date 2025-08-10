@@ -40,7 +40,19 @@ export function useReviewRequests(): UseReviewRequestsState & UseReviewRequestsA
       const data = await response.json()
 
       if (!response.ok) {
+        // キャッシュデータがない場合の特別処理
+        if (data.error && data.error.includes("注文データが見つかりません")) {
+          throw new Error("注文データが読み込まれていません。画面を更新して注文データを取得してからレビュー依頼を送信してください。")
+        }
         throw new Error(data.error || "レビュー依頼の送信に失敗しました")
+      }
+
+      // レスポンスが成功でも、実際の送信が失敗した場合の処理
+      if (!data.success && data.result?.message) {
+        // Amazon側で対象外と判定された場合の適切なメッセージ
+        if (data.result.message.includes("対象ではありません")) {
+          throw new Error("Amazon側でレビュー依頼対象外と判定されました。この注文は既にレビュー依頼済みか、期限切れ、または対象外カテゴリです。")
+        }
       }
 
       setState({
@@ -79,7 +91,19 @@ export function useReviewRequests(): UseReviewRequestsState & UseReviewRequestsA
       const data = await response.json()
 
       if (!response.ok) {
+        // キャッシュデータがない場合の特別処理
+        if (data.error && data.error.includes("注文データが見つかりません")) {
+          throw new Error("注文データが読み込まれていません。画面を更新して注文データを取得してからレビュー依頼を送信してください。")
+        }
         throw new Error(data.error || "一斉レビュー依頼の送信に失敗しました")
+      }
+
+      // バッチ処理の結果をより詳細に処理
+      if (data.success && data.result) {
+        const { sentCount, failedCount, totalCount } = data.result
+        if (sentCount === 0 && failedCount === totalCount) {
+          throw new Error("選択した注文はすべてAmazon側でレビュー依頼対象外と判定されました。既にレビュー依頼済み、期限切れ、または対象外カテゴリの可能性があります。")
+        }
       }
 
       setState({
