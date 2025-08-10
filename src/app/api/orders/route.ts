@@ -35,13 +35,13 @@ export async function GET(request: NextRequest) {
       createdBefore = defaultCreatedBefore.toISOString()
     }
     
-    const maxResults = parseInt(searchParams.get("maxResults") || "10") // デフォルト10件（表示確認のため大幅減量）
+    const maxResults = parseInt(searchParams.get("maxResults") || "100") // デフォルト100件（API最大値）
     const nextToken = searchParams.get("nextToken")
 
     const ordersResponse = await amazonApiService.getOrders({
       createdAfter,
       createdBefore,
-      maxResultsPerPage: Math.min(maxResults, 10), // 最大10件/回でページ分割（表示確認のため大幅減量）
+      maxResultsPerPage: Math.min(maxResults, 100), // 最大100件/回（SP-API上限）
       nextToken,
     })
 

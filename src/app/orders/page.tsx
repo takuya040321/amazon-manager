@@ -223,7 +223,7 @@ export default function OrdersPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">レビュー依頼</h1>
             <p className="text-muted-foreground">
-              Amazon注文からレビュー依頼を送信（今日から過去1週間の10件を表示）
+              Amazon注文からレビュー依頼を送信（今日から過去1週間の最大100件を表示）
               {lastUpdated && (
                 <span className="ml-2 text-sm">
                   （最終更新: {new Date(lastUpdated).toLocaleString("ja-JP")}）
