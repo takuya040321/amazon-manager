@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { RefreshCw, Eye, Package, Download, Mail, Send, ChevronRight } from "lucide-react"
+import { RefreshCw, Eye, Package, Download, Mail, Send, ChevronRight, ChevronLeft } from "lucide-react"
 import { useOrders } from "@/hooks/use-orders"
 import { useReviewRequests } from "@/hooks/use-review-requests"
 import { useDateFilter } from "@/hooks/use-date-filter"
@@ -48,11 +48,15 @@ export default function OrdersPage() {
     lastUpdated, 
     totalCount, 
     hasMorePages,
+    currentPage,
+    totalPages,
+    itemsPerPage,
     isBackgroundLoading,
     backgroundProgress,
     cachedTotalCount,
     refreshOrders, 
-    loadMoreOrders,
+    goToNextPage,
+    goToPreviousPage,
     filterByDateRange,
     getFilteredOrdersFromCache 
   } = useOrders()
@@ -262,7 +266,7 @@ export default function OrdersPage() {
               Amazon注文からレビュー依頼を送信（商品詳細・依頼可能性込みで表示）
               <br />
               <small className="text-xs text-green-600">
-                高速化: Orders + Catalog Items + Solicitation Actions APIを並列処理で事前取得（100件・3倍高速化）
+                ページネーション: 100件ずつ表示・バックグラウンド取得でキャッシュ高速化
               </small>
               {isBackgroundLoading && (
                 <span className="ml-2 text-xs text-blue-600">
@@ -475,7 +479,7 @@ export default function OrdersPage() {
               <div className="flex flex-col items-center justify-center h-64 space-y-4">
                 <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
                 <div className="text-center">
-                  <p className="text-lg font-medium">初期100件のデータを高速取得中...</p>
+                  <p className="text-lg font-medium">ページ{currentPage}のデータを高速取得中...</p>
                   <p className="text-sm text-muted-foreground mt-2">
                     Orders + Catalog Items + Solicitation Actions APIを並列処理で取得中
                   </p>
@@ -610,42 +614,53 @@ export default function OrdersPage() {
         </Card>
 
         {/* ページネーション */}
-        {(hasMorePages || cachedTotalCount > totalCount) && (
-          <div className="flex justify-center pt-4 space-x-2">
+        <div className="flex items-center justify-center pt-6 space-x-4">
+          {/* 前のページ */}
+          <Button
+            variant="outline"
+            onClick={goToPreviousPage}
+            disabled={isLoading || currentPage <= 1}
+            className="px-4"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            前のページ
+          </Button>
+          
+          {/* ページ情報 */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">
+              ページ {currentPage} / {totalPages}
+            </span>
+            <span className="text-xs text-muted-foreground border-l pl-2 ml-2">
+              {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, cachedTotalCount || totalCount)} 件
+            </span>
             {cachedTotalCount > totalCount && (
-              <Button
-                variant="default"
-                onClick={loadMoreOrders}
-                disabled={isLoading}
-                className="px-6 bg-purple-600 hover:bg-purple-700"
-                title="キャッシュからすぐに表示"
-              >
-                <ChevronRight className="mr-2 h-4 w-4" />
-                すぐに表示 ({Math.min(100, cachedTotalCount - totalCount)}件)
-              </Button>
-            )}
-            {hasMorePages && cachedTotalCount <= totalCount && (
-              <Button
-                variant="outline"
-                onClick={loadMoreOrders}
-                disabled={isLoading}
-                className="px-6"
-              >
-                {isLoading ? (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    読み込み中...
-                  </>
-                ) : (
-                  <>
-                    <ChevronRight className="mr-2 h-4 w-4" />
-                    さらに読み込む
-                  </>
-                )}
-              </Button>
+              <span className="text-xs text-purple-600">
+                (キャッシュ: {cachedTotalCount}件)
+              </span>
             )}
           </div>
-        )}
+          
+          {/* 次のページ */}
+          <Button
+            variant="outline"
+            onClick={goToNextPage}
+            disabled={isLoading || !hasMorePages}
+            className="px-4"
+          >
+            {isLoading ? (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                読み込み中...
+              </>
+            ) : (
+              <>
+                次のページ
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </MainLayout>
   )

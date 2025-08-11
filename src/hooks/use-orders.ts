@@ -11,6 +11,10 @@ interface UseOrdersState {
   totalCount: number
   nextToken?: string | null
   hasMorePages: boolean
+  // ページネーション状態
+  currentPage: number
+  itemsPerPage: number
+  totalPages: number
   // バックグラウンド取得状態
   isBackgroundLoading: boolean
   backgroundProgress: {
@@ -24,7 +28,9 @@ interface UseOrdersState {
 interface UseOrdersActions {
   refreshOrders: (dateParams?: { createdAfter?: string; createdBefore?: string }) => Promise<void>
   getEligibleOrdersForReview: () => Promise<Order[]>
-  loadMoreOrders: () => Promise<void>
+  goToNextPage: () => Promise<void>
+  goToPreviousPage: () => Promise<void>
+  goToPage: (page: number) => Promise<void>
   filterByDateRange: (startDate?: string, endDate?: string) => Promise<void>
 }
 
@@ -37,6 +43,9 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     totalCount: 0,
     nextToken: null,
     hasMorePages: false,
+    currentPage: 1,
+    itemsPerPage: 100,
+    totalPages: 1,
     isBackgroundLoading: false,
     backgroundProgress: {
       current: 0,
@@ -97,27 +106,28 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     }
   }, [])
 
-  const loadMoreOrders = useCallback(async () => {
+  // ページネーション: 次のページへ移動
+  const goToNextPage = useCallback(async () => {
     if (state.isLoading) return
     
-    // キャッシュから優先的に表示
-    const currentDisplayCount = state.orders.length
-    const availableInCache = allOrdersCacheRef.current.length
+    const nextPage = state.currentPage + 1
+    const startIndex = (nextPage - 1) * state.itemsPerPage
+    const endIndex = startIndex + state.itemsPerPage
     
-    if (availableInCache > currentDisplayCount) {
-      // キャッシュから即座に表示
-      const additionalCount = Math.min(100, availableInCache - currentDisplayCount)
-      const additionalOrders = allOrdersCacheRef.current
-        .slice(currentDisplayCount, currentDisplayCount + additionalCount)
+    // キャッシュから優先的に表示
+    if (allOrdersCacheRef.current.length >= endIndex) {
+      // キャッシュに十分なデータがある場合
+      const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
       
       setState(prev => ({
         ...prev,
-        orders: [...prev.orders, ...additionalOrders],
-        totalCount: prev.totalCount + additionalOrders.length,
-        hasMorePages: availableInCache > currentDisplayCount + additionalCount || !!prev.nextToken
+        orders: pageOrders,
+        currentPage: nextPage,
+        totalPages: Math.ceil(allOrdersCacheRef.current.length / state.itemsPerPage),
+        hasMorePages: allOrdersCacheRef.current.length > endIndex,
       }))
       
-      console.log(`[DEBUG] キャッシュから${additionalOrders.length}件を即座に表示`)
+      console.log(`[DEBUG] キャッシュからページ${nextPage}を表示 (${pageOrders.length}件)`)
       return
     }
     
@@ -136,34 +146,27 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
       }
 
       const ordersData: OrdersResponse = await response.json()
+      
+      // キャッシュを更新
+      const cacheExistingIds = new Set(allOrdersCacheRef.current.map(order => order.id))
+      const newOrders = ordersData.orders.filter(order => !cacheExistingIds.has(order.id))
+      allOrdersCacheRef.current = [...allOrdersCacheRef.current, ...newOrders]
+      
+      // 次のページを表示
+      const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
 
-      setState(prev => {
-        // 重複を防ぐため、既存の注文IDをセットに保存
-        const existingOrderIds = new Set(prev.orders.map(order => order.id))
-        const newOrders = ordersData.orders.filter(order => !existingOrderIds.has(order.id))
-        
-        // 結合した注文リストを新しい順（降順）でソート
-        const allOrders = [...prev.orders, ...newOrders].sort((a, b) => 
-          new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
-        )
-        
-        // キャッシュも更新
-        const cacheExistingIds = new Set(allOrdersCacheRef.current.map(order => order.id))
-        const newCacheOrders = newOrders.filter(order => !cacheExistingIds.has(order.id))
-        allOrdersCacheRef.current = [...allOrdersCacheRef.current, ...newCacheOrders]
-        
-        return {
-          ...prev,
-          orders: allOrders,
-          isLoading: false,
-          error: null,
-          lastUpdated: ordersData.lastUpdated,
-          totalCount: (prev.totalCount || 0) + newOrders.length,
-          nextToken: ordersData.nextToken,
-          hasMorePages: !!ordersData.nextToken,
-          cachedTotalCount: allOrdersCacheRef.current.length
-        }
-      })
+      setState(prev => ({
+        ...prev,
+        orders: pageOrders,
+        isLoading: false,
+        error: null,
+        lastUpdated: ordersData.lastUpdated,
+        nextToken: ordersData.nextToken,
+        currentPage: nextPage,
+        totalPages: Math.ceil(allOrdersCacheRef.current.length / state.itemsPerPage),
+        hasMorePages: allOrdersCacheRef.current.length > endIndex || !!ordersData.nextToken,
+        cachedTotalCount: allOrdersCacheRef.current.length
+      }))
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -171,7 +174,55 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         error: error instanceof Error ? error.message : "未知のエラーが発生しました",
       }))
     }
-  }, [state.nextToken, state.isLoading, state.orders.length])
+  }, [state.currentPage, state.itemsPerPage, state.nextToken, state.isLoading])
+  
+  // ページネーション: 前のページへ移動
+  const goToPreviousPage = useCallback(async () => {
+    if (state.currentPage <= 1 || state.isLoading) return
+    
+    const previousPage = state.currentPage - 1
+    const startIndex = (previousPage - 1) * state.itemsPerPage
+    const endIndex = startIndex + state.itemsPerPage
+    
+    // キャッシュから表示
+    const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
+    
+    setState(prev => ({
+      ...prev,
+      orders: pageOrders,
+      currentPage: previousPage,
+      hasMorePages: allOrdersCacheRef.current.length > endIndex || !!prev.nextToken,
+    }))
+    
+    console.log(`[DEBUG] キャッシュからページ${previousPage}を表示 (${pageOrders.length}件)`)
+  }, [state.currentPage, state.itemsPerPage, state.isLoading])
+  
+  // ページネーション: 指定ページへ移動
+  const goToPage = useCallback(async (page: number) => {
+    if (page < 1 || page === state.currentPage || state.isLoading) return
+    
+    const startIndex = (page - 1) * state.itemsPerPage
+    const endIndex = startIndex + state.itemsPerPage
+    
+    // キャッシュから表示
+    if (allOrdersCacheRef.current.length >= endIndex) {
+      const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
+      
+      setState(prev => ({
+        ...prev,
+        orders: pageOrders,
+        currentPage: page,
+        totalPages: Math.ceil(allOrdersCacheRef.current.length / state.itemsPerPage),
+        hasMorePages: allOrdersCacheRef.current.length > endIndex || !!prev.nextToken,
+      }))
+      
+      console.log(`[DEBUG] キャッシュからページ${page}を表示 (${pageOrders.length}件)`)
+      return
+    }
+    
+    // キャッシュにデータが不足の場合は現在のページに留まる
+    console.warn(`[DEBUG] ページ${page}のデータがキャッシュにありません`)
+  }, [state.currentPage, state.itemsPerPage, state.isLoading])
 
   const filterByDateRange = useCallback(async (startDate?: string, endDate?: string) => {
     const dateParams: { createdAfter?: string; createdBefore?: string } = {}
@@ -244,6 +295,8 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         totalCount: sortedOrders.length,
         nextToken: ordersData.nextToken,
         hasMorePages: !!ordersData.nextToken,
+        currentPage: 1,
+        totalPages: Math.max(1, Math.ceil(sortedOrders.length / 100)),
       }))
       
       // キャッシュを更新
@@ -408,7 +461,9 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     ...state,
     refreshOrders,
     getEligibleOrdersForReview,
-    loadMoreOrders,
+    goToNextPage,
+    goToPreviousPage,
+    goToPage,
     filterByDateRange,
     getFilteredOrdersFromCache,
     startBackgroundFetching,

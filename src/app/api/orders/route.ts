@@ -15,9 +15,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Amazon APIから新しいデータを取得（デフォルトは今日から過去1週間）
+    // Amazon APIから新しいデータを取得（デフォルトは今日から過去3ヶ月間）
     const createdAfter = searchParams.get("createdAfter") || 
-      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 過去1週間（最新データを優先）
+      new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() // 過去3ヶ月間（90日）
     
     // CreatedBeforeは現在時刻から少なくとも2分前である必要がある（Amazon SP-API制限）
     const defaultCreatedBefore = new Date(Date.now() - 2 * 60 * 1000) // 2分前
