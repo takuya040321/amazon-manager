@@ -222,21 +222,25 @@ class AmazonApiService {
         if (storedOrders.length > 0) {
           console.log(`[DEBUG] 保存されたデータを使用: ${storedOrders.length}件`)
           
-          // 保存データからページネーション処理
-          const maxResults = params?.maxResultsPerPage || 100
-          const startIndex = 0 // 簡易実装（実際のnextTokenによる位置計算は複雑）
-          const endIndex = startIndex + maxResults
-          const pageOrders = storedOrders.slice(startIndex, endIndex)
-          
-          // Solicitationチェックが必要な注文のみ再チェック
-          await this.recheckSolicitationIfNeeded(pageOrders)
-          
-          return {
-            orders: pageOrders,
-            nextToken: endIndex < storedOrders.length ? "has-more" : undefined,
-            totalCount: storedOrders.length,
-            lastUpdated: new Date().toISOString(),
-            needsEnrichment: false,
+          // nextTokenがある場合は、実際のAmazon APIを呼び出す（簡易実装の限界）
+          if (params?.nextToken) {
+            console.log(`[DEBUG] nextToken指定のためAmazon APIを呼び出します`)
+            // 下のAPI呼び出し処理に続行
+          } else {
+            // 最初のページの場合のみ保存データを使用
+            const maxResults = params?.maxResultsPerPage || 100
+            const pageOrders = storedOrders.slice(0, maxResults)
+            
+            // Solicitationチェックが必要な注文のみ再チェック
+            const processedOrders = await this.recheckSolicitationIfNeeded(pageOrders)
+            
+            return {
+              orders: processedOrders,
+              nextToken: storedOrders.length > maxResults ? "has-more" : undefined,
+              totalCount: storedOrders.length,
+              lastUpdated: new Date().toISOString(),
+              needsEnrichment: false,
+            }
           }
         }
       }
@@ -261,17 +265,70 @@ class AmazonApiService {
       
       console.log(`[DEBUG] Amazon APIから注文データ取得完了: ${response.payload.Orders.length}件`)
       
-      // 基本注文データを作成してまず保存（既存データと統合）
+      // 基本注文データを作成
       const basicOrders = response.payload.Orders.map((order: any) => 
         this.createBasicOrderFromApiData(order)
       )
-      await ordersStorage.saveOrdersWithMerge(basicOrders)
+      
+      // nextTokenがある場合は既存データと統合
+      let ordersToProcess = basicOrders
+      if (params?.nextToken) {
+        // 2ページ目以降：既存データを読み込み、新データと統合
+        const existingOrders = await ordersStorage.loadOrders()
+        const orderMap = new Map<string, Order>()
+        
+        // 既存注文をマップに追加
+        existingOrders.forEach(order => orderMap.set(order.amazonOrderId, order))
+        
+        // 新しい注文データで上書き（基本情報のみ、Solicitationチェック結果は保持）
+        const ordersNeedingCheck: Order[] = []
+        
+        basicOrders.forEach(order => {
+          const existing = orderMap.get(order.amazonOrderId)
+          if (existing && existing.solicitationEligible !== undefined) {
+            // 既存のSolicitationチェック結果を保持
+            const preservedOrder = {
+              ...order,
+              reviewRequestStatus: existing.reviewRequestStatus,
+              solicitationEligible: existing.solicitationEligible,
+              solicitationReason: existing.solicitationReason,
+            }
+            orderMap.set(order.amazonOrderId, preservedOrder)
+            console.log(`[DEBUG] 注文 ${order.amazonOrderId} の既存チェック結果を保持 (${existing.solicitationEligible ? '対象' : '対象外'})`)
+          } else {
+            // 未チェックの注文のみチェック対象に追加
+            orderMap.set(order.amazonOrderId, order)
+            ordersNeedingCheck.push(order)
+            console.log(`[DEBUG] 注文 ${order.amazonOrderId} は未チェックのためチェック対象に追加`)
+          }
+        })
+        
+        const allOrders = Array.from(orderMap.values())
+        await ordersStorage.saveOrders(allOrders)
+        
+        // 未チェックの注文のみをSolicitationチェック対象とする
+        ordersToProcess = ordersNeedingCheck
+      } else {
+        // 1ページ目：既存データと統合保存
+        await ordersStorage.saveOrdersWithMerge(basicOrders)
+      }
       
       // Solicitationチェックを実行し、結果を保存
-      const enrichedOrders = await this.recheckSolicitationIfNeeded(basicOrders)
+      await this.recheckSolicitationIfNeeded(ordersToProcess)
+      
+      // nextTokenがある場合は、チェック後に今回取得した注文を再度保存データから取得
+      let finalOrders: Order[]
+      if (params?.nextToken) {
+        const updatedStoredOrders = await ordersStorage.loadOrders()
+        const orderIds = response.payload.Orders.map((o: any) => o.AmazonOrderId)
+        finalOrders = updatedStoredOrders.filter(order => orderIds.includes(order.amazonOrderId))
+      } else {
+        const updatedStoredOrders = await ordersStorage.loadOrders()
+        finalOrders = updatedStoredOrders.slice(0, params?.maxResultsPerPage || 100)
+      }
 
       return {
-        orders: enrichedOrders,
+        orders: finalOrders,
         nextToken: response.payload.NextToken,
         totalCount: response.payload.Orders.length,
         lastUpdated: new Date().toISOString(),
@@ -525,10 +582,22 @@ class AmazonApiService {
   }
 
   // まとめて注文データを更新保存（ファイルI/O最適化）
-  private async batchUpdateOrders(allOrders: Order[], updates: { amazonOrderId: string; updates: Partial<Order> }[]): Promise<void> {
+  private async batchUpdateOrders(processedOrders: Order[], updates: { amazonOrderId: string; updates: Partial<Order> }[]): Promise<void> {
     console.log(`[DEBUG] ${updates.length}件の更新をまとめて保存中...`)
-    await ordersStorage.saveOrders(allOrders)
-    console.log(`[DEBUG] 更新保存完了`)
+    
+    // 全体データを読み込み、今回の結果で更新
+    const allStoredOrders = await ordersStorage.loadOrders()
+    const orderMap = new Map<string, Order>()
+    
+    // 既存データをマップに設定
+    allStoredOrders.forEach(order => orderMap.set(order.amazonOrderId, order))
+    
+    // 今回処理した注文で上書き
+    processedOrders.forEach(order => orderMap.set(order.amazonOrderId, order))
+    
+    const updatedAllOrders = Array.from(orderMap.values())
+    await ordersStorage.saveOrders(updatedAllOrders)
+    console.log(`[DEBUG] 全データ更新保存完了: ${updatedAllOrders.length}件`)
   }
 
   // 単一注文の詳細処理（OrderItems API不要）

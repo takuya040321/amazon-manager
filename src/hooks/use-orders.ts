@@ -112,55 +112,44 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
   }, [])
 
   const goToNextPage = useCallback(async () => {
-    setState(prev => {
-      if (!prev.nextToken || prev.isLoading) return prev
+    if (!state.nextToken || state.isLoading) return
+    
+    setState(prev => ({ ...prev, isLoading: true, error: null }))
+    
+    try {
+      const searchParams = new URLSearchParams()
+      searchParams.set("nextToken", state.nextToken)
+      // refresh=trueを削除（永続化システムを活用）
       
-      // 非同期処理を開始
-      const fetchNextPage = async () => {
-        try {
-          const searchParams = new URLSearchParams()
-          searchParams.set("nextToken", prev.nextToken!)
-          searchParams.set("refresh", "true") // キャッシュを回避
-          
-          const response = await fetch(`/api/orders?${searchParams.toString()}`)
-          
-          if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.error || "次のページの取得に失敗しました")
-          }
-          
-          const ordersData: OrdersResponse = await response.json()
-          
-          const sortedOrders = ordersData.orders.sort((a, b) => 
-            new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
-          )
-          
-          setState(current => ({
-            ...current,
-            orders: sortedOrders,
-            isLoading: false,
-            currentPage: current.currentPage + 1,
-            nextToken: ordersData.nextToken,
-            hasMorePages: !!ordersData.nextToken,
-          }))
-        } catch (error) {
-          setState(current => ({
-            ...current,
-            isLoading: false,
-            error: error instanceof Error ? error.message : "次のページの取得に失敗しました",
-          }))
-        }
+      const response = await fetch(`/api/orders?${searchParams.toString()}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "次のページの取得に失敗しました")
       }
       
-      fetchNextPage()
+      const ordersData: OrdersResponse = await response.json()
       
-      return {
+      const sortedOrders = ordersData.orders.sort((a, b) => 
+        new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
+      )
+      
+      setState(prev => ({
         ...prev,
-        isLoading: true,
-        error: null
-      }
-    })
-  }, [])
+        orders: sortedOrders,
+        isLoading: false,
+        currentPage: prev.currentPage + 1,
+        nextToken: ordersData.nextToken,
+        hasMorePages: !!ordersData.nextToken,
+      }))
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "次のページの取得に失敗しました",
+      }))
+    }
+  }, [state.nextToken, state.isLoading])
 
   const goToPreviousPage = useCallback(async () => {
     setState(prev => {
