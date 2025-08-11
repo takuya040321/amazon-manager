@@ -15,18 +15,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Amazon APIから新しいデータを取得（デフォルトは今日から過去2ヶ月間）
-    const createdAfter = searchParams.get("createdAfter") || 
-      new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString() // 過去2ヶ月間（60日）
+    // Amazon APIから新しいデータを取得（デフォルトは7日前から過去1ヶ月間）
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7日前
+    const oneMonthBeforeSevenDaysAgo = new Date(sevenDaysAgo.getTime() - 30 * 24 * 60 * 60 * 1000) // 7日前から1ヶ月遡る
+    const createdAfter = searchParams.get("createdAfter") || oneMonthBeforeSevenDaysAgo.toISOString() // 過去1ヶ月（7日前まで）
     
-    // CreatedBeforeは現在時刻から少なくとも2分前である必要がある（Amazon SP-API制限）
-    const defaultCreatedBefore = new Date(Date.now() - 2 * 60 * 1000) // 2分前
+    // CreatedBeforeは7日前まで（Amazon SP-API制限を考慮）
+    const defaultCreatedBefore = sevenDaysAgo // 7日前
     const createdBeforeParam = searchParams.get("createdBefore")
     
     let createdBefore: string
     if (createdBeforeParam) {
       const requestedDate = new Date(createdBeforeParam)
-      const minAllowedDate = new Date(Date.now() - 2 * 60 * 1000)
+      const minAllowedDate = new Date(Date.now() - 2 * 60 * 1000) // Amazon SP-API制限: 2分前以前
       // 指定された日付が2分前より新しい場合は、2分前に調整
       createdBefore = requestedDate > minAllowedDate ? 
         minAllowedDate.toISOString() : 

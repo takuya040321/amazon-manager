@@ -409,7 +409,7 @@ export default function OrdersPage() {
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
-                {isDateRangeSelected ? "選択期間" : "過去2ヶ月間"}
+                {isDateRangeSelected ? "選択期間" : "過去1ヶ月間（7日前まで）"}
               </p>
             </CardContent>
           </Card>
@@ -422,7 +422,7 @@ export default function OrdersPage() {
             <CardContent>
               <div className="text-2xl font-bold">¥{stats.totalRevenue.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">
-                {isDateRangeSelected ? "選択期間" : "過去2ヶ月間"}
+                {isDateRangeSelected ? "選択期間" : "過去1ヶ月間（7日前まで）"}
               </p>
             </CardContent>
           </Card>
