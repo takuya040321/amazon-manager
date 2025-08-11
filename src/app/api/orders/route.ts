@@ -5,12 +5,16 @@ import { cacheService } from "@/lib/cache"
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const forceRefresh = searchParams.get("refresh") === "true"
+  const nextToken = searchParams.get("nextToken")
 
   try {
-    // キャッシュから取得を試みる（リフレッシュが指定されていない場合）
-    if (!forceRefresh) {
+    console.log(`[DEBUG] API Route - refresh: ${forceRefresh}, nextToken: ${nextToken ? 'present' : 'none'}`)
+    
+    // キャッシュから取得を試みる（リフレッシュまたはnextTokenが指定されていない場合）
+    if (!forceRefresh && !nextToken) {
       const cachedOrders = cacheService.getOrders()
       if (cachedOrders) {
+        console.log(`[DEBUG] Returning cached orders: ${cachedOrders.orders.length} items`)
         return NextResponse.json(cachedOrders)
       }
     }
@@ -37,18 +41,24 @@ export async function GET(request: NextRequest) {
     }
     
     const maxResults = parseInt(searchParams.get("maxResults") || "500") // デフォルト500件（自動ページネーション）
-    const nextToken = searchParams.get("nextToken")
 
+    console.log(`[DEBUG] Calling Amazon API with nextToken: ${nextToken || 'none'}`)
+    
     const ordersResponse = await amazonApiService.getOrders({
       createdAfter,
       createdBefore,
       maxResultsPerPage: Math.min(maxResults, 100), // API単回制限は100件
       totalLimit: maxResults, // 自動ページネーション用の目標件数
       nextToken,
+      forceRefresh, // 強制リフレッシュフラグを渡す
     })
+    
+    console.log(`[DEBUG] Amazon API returned ${ordersResponse.orders.length} orders, nextToken: ${ordersResponse.nextToken ? 'present' : 'none'}`)
 
-    // キャッシュに保存
-    cacheService.setOrders(ordersResponse)
+    // キャッシュに保存（nextTokenがない場合のみ = 最初のページのみ）
+    if (!nextToken) {
+      cacheService.setOrders(ordersResponse)
+    }
 
     return NextResponse.json(ordersResponse)
   } catch (error) {

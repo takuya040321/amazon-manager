@@ -1,4 +1,5 @@
 import { Order, OrdersResponse } from "@/types/order"
+import { ordersStorage } from "./orders-storage"
 
 // 注文ステータスのマッピング
 const ORDER_STATUS_MAP = {
@@ -212,14 +213,40 @@ class AmazonApiService {
     maxResultsPerPage?: number
     nextToken?: string
     totalLimit?: number
+    forceRefresh?: boolean
   }): Promise<OrdersResponse> {
     try {
+      // 強制リフレッシュでない場合は、保存されたデータを優先使用
+      if (!params?.forceRefresh) {
+        const storedOrders = await ordersStorage.loadOrders()
+        if (storedOrders.length > 0) {
+          console.log(`[DEBUG] 保存されたデータを使用: ${storedOrders.length}件`)
+          
+          // 保存データからページネーション処理
+          const maxResults = params?.maxResultsPerPage || 100
+          const startIndex = 0 // 簡易実装（実際のnextTokenによる位置計算は複雑）
+          const endIndex = startIndex + maxResults
+          const pageOrders = storedOrders.slice(startIndex, endIndex)
+          
+          // Solicitationチェックが必要な注文のみ再チェック
+          await this.recheckSolicitationIfNeeded(pageOrders)
+          
+          return {
+            orders: pageOrders,
+            nextToken: endIndex < storedOrders.length ? "has-more" : undefined,
+            totalCount: storedOrders.length,
+            lastUpdated: new Date().toISOString(),
+            needsEnrichment: false,
+          }
+        }
+      }
+
       // totalLimitが指定されている場合は自動ページネーション
       if (params?.totalLimit && params.totalLimit > 100 && !params.nextToken) {
         return await this.getOrdersWithPagination(params)
       }
 
-      // 通常の単一ページ取得
+      // 通常の単一ページ取得（API呼び出し）
       const apiParams: Record<string, string> = {
         MarketplaceIds: this.config.marketplace,
       }
@@ -232,19 +259,23 @@ class AmazonApiService {
 
       const response = await this.makeApiRequest("/orders/v0/orders", apiParams)
       
-      console.log(`[DEBUG] 注文データ取得完了: ${response.payload.Orders.length}件`)
+      console.log(`[DEBUG] Amazon APIから注文データ取得完了: ${response.payload.Orders.length}件`)
       
-      // 段階的表示：まず基本情報のみで即座に返す
+      // 基本注文データを作成してまず保存（既存データと統合）
       const basicOrders = response.payload.Orders.map((order: any) => 
-        this.createBasicOrderFromRawData(order)
+        this.createBasicOrderFromApiData(order)
       )
+      await ordersStorage.saveOrdersWithMerge(basicOrders)
+      
+      // Solicitationチェックを実行し、結果を保存
+      const enrichedOrders = await this.recheckSolicitationIfNeeded(basicOrders)
 
       return {
-        orders: basicOrders,
+        orders: enrichedOrders,
         nextToken: response.payload.NextToken,
         totalCount: response.payload.Orders.length,
         lastUpdated: new Date().toISOString(),
-        needsEnrichment: true, // 商品詳細の追加取得が必要
+        needsEnrichment: false,
       }
     } catch (error) {
       console.error("Failed to get orders:", error)
@@ -288,17 +319,20 @@ class AmazonApiService {
           break
         }
 
-        // ページごとに商品詳細も並列取得
+        // ページごとに基本情報のみで処理
         const remainingNeeded = params.totalLimit - totalFetched
         const maxOrdersToProcess = Math.min(100, Math.min(remainingNeeded, response.payload.Orders.length))
         const pageOrders = response.payload.Orders.slice(0, maxOrdersToProcess)
-        console.log(`[DEBUG] ページ${page}: ${pageOrders.length}件を並列処理で取得予定`)
-        const ordersWithItems = await this.enrichOrdersWithProductDetails(pageOrders)
+        console.log(`[DEBUG] ページ${page}: ${pageOrders.length}件を順次処理で取得予定`)
+        const ordersWithItems = await this.processOrdersSequentially(pageOrders)
         
         allOrders.push(...ordersWithItems)
         totalFetched += ordersWithItems.length
 
-        console.log(`[DEBUG] ページ${page}: ${ordersWithItems.length}件取得 (並列処理完了、累計: ${totalFetched}/${params.totalLimit})`)
+        console.log(`[DEBUG] ページ${page}: ${ordersWithItems.length}件取得 (順次処理完了、累計: ${totalFetched}/${params.totalLimit})`)
+
+        // 各ページ完了時に保存（統合保存）
+        await ordersStorage.saveOrdersWithMerge(allOrders)
 
         nextToken = response.payload.NextToken
         if (!nextToken || totalFetched >= params.totalLimit) {
@@ -306,7 +340,7 @@ class AmazonApiService {
           break
         }
 
-        // API制限対応: 並列処理後の間隔調整
+        // API制限対応: 順次処理後の間隔調整
         await new Promise(resolve => setTimeout(resolve, 1000))
 
       } catch (error) {
@@ -323,85 +357,203 @@ class AmazonApiService {
     }
   }
 
-  // 並列処理で注文データに商品詳細を追加（高速化版）
-  private async enrichOrdersWithProductDetails(ordersData: any[]): Promise<Order[]> {
-    console.log(`[DEBUG] 並列処理で${ordersData.length}件の注文詳細を取得開始`)
+  // 順次処理で注文データを処理（バッチ処理を廃止）
+  private async processOrdersSequentially(ordersData: any[]): Promise<Order[]> {
+    console.log(`[DEBUG] 順次処理で${ordersData.length}件の注文詳細を取得開始`)
     
-    // バッチサイズ（同時実行数）を設定
-    const batchSize = 5 // 段階的表示で最適化: 5件ずつ並列処理
     const enrichedOrders: Order[] = []
     
-    for (let i = 0; i < ordersData.length; i += batchSize) {
-      const batch = ordersData.slice(i, i + batchSize)
-      console.log(`[DEBUG] バッチ${Math.floor(i/batchSize) + 1}: ${batch.length}件を並列処理中...`)
-      
-      // バッチ内の注文を並列処理
-      const batchPromises = batch.map((order, batchIndex) => 
-        this.processOrderWithDetails(order, i + batchIndex + 1, ordersData.length)
-      )
+    for (let i = 0; i < ordersData.length; i++) {
+      const order = ordersData[i]
+      console.log(`[DEBUG] 注文 ${i + 1}/${ordersData.length}: ${order.AmazonOrderId} を処理中...`)
       
       try {
-        const batchResults = await Promise.all(batchPromises)
-        enrichedOrders.push(...batchResults)
+        const enrichedOrder = await this.processOrderWithDetails(order, i + 1, ordersData.length)
+        enrichedOrders.push(enrichedOrder)
         
-        // バッチ間で2秒待機（レート制限対応を強化）
-        if (i + batchSize < ordersData.length) {
-          console.log(`[DEBUG] 次のバッチまで2秒待機...`)
-          await new Promise(resolve => setTimeout(resolve, 2000))
+        // API制限対応: Solicitation API用に1秒待機
+        if (i < ordersData.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
         }
       } catch (error) {
-        console.error(`[DEBUG] バッチ処理エラー:`, error)
-        // エラー時は個別に処理
-        for (const order of batch) {
-          const basicOrder = this.createBasicOrder(order, "バッチ処理エラー")
-          enrichedOrders.push(basicOrder)
-        }
+        console.error(`[DEBUG] 注文 ${order.AmazonOrderId} の処理エラー:`, error)
+        const basicOrder = this.createBasicOrder(order, "処理エラー")
+        enrichedOrders.push(basicOrder)
       }
     }
     
-    console.log(`[DEBUG] 並列処理完了: ${enrichedOrders.length}件の注文詳細取得完了`)
+    console.log(`[DEBUG] 順次処理完了: ${enrichedOrders.length}件の注文詳細取得完了`)
     return enrichedOrders
   }
 
-  // 単一注文の詳細処理（並列実行対応）
+  // Amazon APIからの生データから基本注文オブジェクトを作成
+  private createBasicOrderFromApiData(order: any): Order {
+    return {
+      id: order.AmazonOrderId,
+      amazonOrderId: order.AmazonOrderId,
+      purchaseDate: order.PurchaseDate,
+      orderStatus: ORDER_STATUS_MAP[order.OrderStatus as keyof typeof ORDER_STATUS_MAP] || order.OrderStatus,
+      fulfillmentChannel: order.FulfillmentChannel === "AFN" ? "AFN" : "MFN",
+      salesChannel: order.SalesChannel || "Amazon.co.jp",
+      totalAmount: parseFloat(order.OrderTotal?.Amount || "0"),
+      currency: order.OrderTotal?.CurrencyCode || "JPY",
+      numberOfItemsShipped: order.NumberOfItemsShipped || 0,
+      numberOfItemsUnshipped: order.NumberOfItemsUnshipped || 0,
+      customer: {
+        name: order.BuyerInfo?.BuyerName,
+        email: order.BuyerInfo?.BuyerEmail,
+        buyerInfo: order.BuyerInfo,
+      },
+      items: [{
+        id: "basic",
+        title: "商品詳細情報なし",
+        asin: "",
+        quantity: order.NumberOfItemsShipped + order.NumberOfItemsUnshipped || 1,
+        price: 0,
+        imageUrl: "",
+        brand: "",
+        manufacturer: "",
+        productType: "",
+      }],
+      shippingAddress: order.DefaultShipFromLocationAddress,
+      reviewRequestSent: false,
+      reviewRequestStatus: "pending",
+      solicitationEligible: undefined, // 未確認
+      solicitationReason: "未チェック",
+    }
+  }
+
+  // Solicitationチェックが必要な注文のみ再チェック
+  private async recheckSolicitationIfNeeded(orders: Order[]): Promise<Order[]> {
+    const ordersNeedingCheck = orders.filter(order => {
+      // 一度もSolicitationチェックしていない場合はチェックが必要
+      if (order.solicitationEligible === undefined) {
+        return true
+      }
+      
+      // 前回のチェック結果がfalse（対象外）の場合はスキップ
+      if (order.solicitationEligible === false) {
+        console.log(`[DEBUG] 注文 ${order.amazonOrderId} は前回対象外のためスキップ (理由: ${order.solicitationReason})`)
+        return false
+      }
+      
+      // 前回のチェック結果がtrue（対象）の場合は再チェック
+      console.log(`[DEBUG] 注文 ${order.amazonOrderId} は前回対象のため再チェック`)
+      return true
+    })
+
+    if (ordersNeedingCheck.length === 0) {
+      console.log("[DEBUG] Solicitationチェックが必要な注文なし")
+      return orders
+    }
+
+    console.log(`[DEBUG] ${ordersNeedingCheck.length}件の注文をSolicitationチェック中...`)
+
+    // チェック対象の注文情報を収集（後でまとめて保存用）
+    const updatedOrders: { amazonOrderId: string; updates: Partial<Order> }[] = []
+
+    // 必要な注文のみSolicitationチェックを実行
+    for (let i = 0; i < ordersNeedingCheck.length; i++) {
+      const order = ordersNeedingCheck[i]
+      console.log(`[DEBUG] Solicitation API呼び出し中 (${i + 1}/${ordersNeedingCheck.length}): ${order.amazonOrderId}`)
+
+      try {
+        const solicitationResult = await this.getSolicitationActions(order.amazonOrderId)
+        
+        // 注文オブジェクトを更新
+        const updatedOrder = {
+          ...order,
+          reviewRequestStatus: solicitationResult.eligible ? "eligible" : "not_eligible",
+          solicitationEligible: solicitationResult.eligible,
+          solicitationReason: solicitationResult.reason,
+        }
+        
+        // 元の配列内の該当注文を更新
+        const originalIndex = orders.findIndex(o => o.amazonOrderId === order.amazonOrderId)
+        if (originalIndex >= 0) {
+          orders[originalIndex] = updatedOrder
+        }
+
+        // 更新情報を収集（後でまとめて保存）
+        updatedOrders.push({
+          amazonOrderId: order.amazonOrderId,
+          updates: {
+            reviewRequestStatus: updatedOrder.reviewRequestStatus,
+            solicitationEligible: updatedOrder.solicitationEligible,
+            solicitationReason: updatedOrder.solicitationReason,
+          }
+        })
+
+        // API制限対応: 1秒待機
+        if (i < ordersNeedingCheck.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+      } catch (error) {
+        console.error(`[DEBUG] 注文 ${order.amazonOrderId} のSolicitationチェックエラー:`, error)
+        
+        const errorOrder = {
+          ...order,
+          reviewRequestStatus: "error" as const,
+          solicitationEligible: false,
+          solicitationReason: "APIエラー",
+        }
+        
+        const originalIndex = orders.findIndex(o => o.amazonOrderId === order.amazonOrderId)
+        if (originalIndex >= 0) {
+          orders[originalIndex] = errorOrder
+        }
+
+        // エラーの場合の更新情報も収集
+        updatedOrders.push({
+          amazonOrderId: order.amazonOrderId,
+          updates: {
+            reviewRequestStatus: "error",
+            solicitationEligible: false,
+            solicitationReason: "APIエラー",
+          }
+        })
+      }
+    }
+
+    // 全体のSolicitationチェック完了後、一度だけまとめて保存
+    if (updatedOrders.length > 0) {
+      await this.batchUpdateOrders(orders, updatedOrders)
+    }
+
+    console.log(`[DEBUG] Solicitationチェック完了: ${ordersNeedingCheck.length}件`)
+    return orders
+  }
+
+  // まとめて注文データを更新保存（ファイルI/O最適化）
+  private async batchUpdateOrders(allOrders: Order[], updates: { amazonOrderId: string; updates: Partial<Order> }[]): Promise<void> {
+    console.log(`[DEBUG] ${updates.length}件の更新をまとめて保存中...`)
+    await ordersStorage.saveOrders(allOrders)
+    console.log(`[DEBUG] 更新保存完了`)
+  }
+
+  // 単一注文の詳細処理（OrderItems API不要）
   private async processOrderWithDetails(order: any, index: number, total: number): Promise<Order> {
     try {
       console.log(`[DEBUG] 注文 ${order.AmazonOrderId} の詳細取得中... (${index}/${total})`)
       
-      // 1. OrderItems APIで基本情報を取得
-      const orderItems = await this.getOrderItems(order.AmazonOrderId)
-      const asins = orderItems.map(item => item.asin).filter(Boolean)
+      // 1. Solicitation APIのみ実行
+      console.log(`[DEBUG] Solicitation API呼び出し中 (${order.AmazonOrderId})`)
+      const solicitationResult = await this.getSolicitationActions(order.AmazonOrderId)
       
-      // 2. Catalog APIとSolicitation APIを並列実行
-      let enrichedItems = orderItems
-      let solicitationResult = { eligible: false, reason: "API呼び出し失敗" }
+      // 2. 基本的な商品データは注文情報から取得（OrderItems API不要）
+      const basicItems = [{
+        id: "basic",
+        title: "商品詳細情報なし",
+        asin: "",
+        quantity: order.NumberOfItemsShipped + order.NumberOfItemsUnshipped || 1,
+        price: 0,
+        imageUrl: "",
+        brand: "",
+        manufacturer: "",
+        productType: "",
+      }]
       
-      if (asins.length > 0) {
-        console.log(`[DEBUG] Solicitation API呼び出し (${order.AmazonOrderId})`)
-        
-        // Solicitation APIのみ実行
-        solicitationResult = await this.getSolicitationActions(order.AmazonOrderId)
-        
-        // 3. 基本的な商品データのみ使用
-        enrichedItems = orderItems.map(orderItem => {
-          return {
-            id: orderItem.id,
-            title: orderItem.title || `商品 ${orderItem.asin}`,
-            asin: orderItem.asin,
-            quantity: orderItem.quantity,
-            price: orderItem.price,
-            imageUrl: "", // 画像URLは使用しない
-            brand: "",
-            manufacturer: "",
-            productType: "",
-          }
-        })
-      } else {
-        // ASINがない場合はSolicitationのみ実行
-        solicitationResult = await this.getSolicitationActions(order.AmazonOrderId)
-      }
-      
-      // 4. 注文オブジェクトを作成
+      // 3. 注文オブジェクトを作成
       const enrichedOrder: Order = {
         id: order.AmazonOrderId,
         amazonOrderId: order.AmazonOrderId,
@@ -418,7 +570,7 @@ class AmazonApiService {
           email: order.BuyerInfo?.BuyerEmail,
           buyerInfo: order.BuyerInfo,
         },
-        items: enrichedItems,
+        items: basicItems,
         shippingAddress: order.DefaultShipFromLocationAddress,
         reviewRequestSent: false,
         reviewRequestStatus: solicitationResult.eligible ? "eligible" : "not_eligible",
@@ -468,83 +620,6 @@ class AmazonApiService {
       solicitationReason: errorReason,
     }
   }
-  
-  // 生の注文データから基本情報のみの注文オブジェクトを作成
-  private createBasicOrderFromRawData(order: any): Order {
-    return {
-      id: order.AmazonOrderId,
-      amazonOrderId: order.AmazonOrderId,
-      purchaseDate: order.PurchaseDate,
-      orderStatus: ORDER_STATUS_MAP[order.OrderStatus as keyof typeof ORDER_STATUS_MAP] || order.OrderStatus,
-      fulfillmentChannel: order.FulfillmentChannel === "AFN" ? "AFN" : "MFN",
-      salesChannel: order.SalesChannel || "Amazon.co.jp",
-      totalAmount: parseFloat(order.OrderTotal?.Amount || "0"),
-      currency: order.OrderTotal?.CurrencyCode || "JPY",
-      numberOfItemsShipped: order.NumberOfItemsShipped || 0,
-      numberOfItemsUnshipped: order.NumberOfItemsUnshipped || 0,
-      customer: {
-        name: order.BuyerInfo?.BuyerName,
-        email: order.BuyerInfo?.BuyerEmail,
-        buyerInfo: order.BuyerInfo,
-      },
-      items: [{
-        id: "loading",
-        title: "商品情報取得中...",
-        asin: "",
-        quantity: order.NumberOfItemsShipped + order.NumberOfItemsUnshipped || 1,
-        price: 0,
-        imageUrl: "",
-      }],
-      shippingAddress: order.DefaultShipFromLocationAddress,
-      reviewRequestSent: false,
-      reviewRequestStatus: "pending",
-      solicitationEligible: undefined, // 未確認
-      solicitationReason: "取得中...",
-    }
-  }
-
-
-  async getOrderItems(orderId: string) {
-    try {
-      // レート制限対応：OrderItems API は0.5 req/sec (2秒間隔)
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      const response = await this.makeApiRequest(`/orders/v0/orders/${orderId}/orderItems`)
-      
-      return response.payload.OrderItems.map((item: any) => ({
-        id: item.OrderItemId,
-        title: item.Title || `商品 ${item.ASIN}`, // タイトルがない場合はASINでフォールバック
-        asin: item.ASIN || "", // ASINを確実に取得
-        quantity: parseInt(item.QuantityOrdered) || 1,
-        price: parseFloat(item.ItemPrice?.Amount || "0"),
-        imageUrl: "", // 画像URLは使用しない
-      }))
-    } catch (error) {
-      // 429エラー（クォータ制限）の場合は特別処理
-      if (error instanceof Error && error.message.includes("429")) {
-        console.warn(`API quota exceeded for order ${orderId}, skipping items`)
-        return [{
-          id: "quota-exceeded",
-          title: "API制限により商品情報を取得できませんでした",
-          asin: "",
-          quantity: 1,
-          price: 0,
-          imageUrl: "",
-        }]
-      }
-      
-      console.error(`Failed to get order items for ${orderId}:`, error)
-      return [{
-        id: "unknown",
-        title: "商品情報取得エラー",
-        asin: "",
-        quantity: 1,
-        price: 0,
-        imageUrl: "",
-      }]
-    }
-  }
-
 
   // Solicitation Actions APIでレビュー依頼可能性をチェック
   async getSolicitationActions(amazonOrderId: string) {

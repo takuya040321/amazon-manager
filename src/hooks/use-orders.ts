@@ -42,12 +42,14 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
 
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const refreshOrders = useCallback(async (dateParams?: { createdAfter?: string; createdBefore?: string }) => {
+  const refreshOrders = useCallback(async (dateParams?: { createdAfter?: string; createdBefore?: string }, forceRefresh = true) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
 
     try {
       const searchParams = new URLSearchParams()
-      searchParams.set("refresh", "true")
+      if (forceRefresh) {
+        searchParams.set("refresh", "true")
+      }
       
       if (dateParams?.createdAfter) {
         searchParams.set("createdAfter", dateParams.createdAfter)
@@ -110,57 +112,77 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
   }, [])
 
   const goToNextPage = useCallback(async () => {
-    if (!state.nextToken || state.isLoading) return
-    
-    setState(prev => ({ ...prev, isLoading: true, error: null }))
-    
-    try {
-      const searchParams = new URLSearchParams()
-      searchParams.set("nextToken", state.nextToken)
+    setState(prev => {
+      if (!prev.nextToken || prev.isLoading) return prev
       
-      const response = await fetch(`/api/orders?${searchParams.toString()}`)
-      
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "次のページの取得に失敗しました")
+      // 非同期処理を開始
+      const fetchNextPage = async () => {
+        try {
+          const searchParams = new URLSearchParams()
+          searchParams.set("nextToken", prev.nextToken!)
+          searchParams.set("refresh", "true") // キャッシュを回避
+          
+          const response = await fetch(`/api/orders?${searchParams.toString()}`)
+          
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || "次のページの取得に失敗しました")
+          }
+          
+          const ordersData: OrdersResponse = await response.json()
+          
+          const sortedOrders = ordersData.orders.sort((a, b) => 
+            new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
+          )
+          
+          setState(current => ({
+            ...current,
+            orders: sortedOrders,
+            isLoading: false,
+            currentPage: current.currentPage + 1,
+            nextToken: ordersData.nextToken,
+            hasMorePages: !!ordersData.nextToken,
+          }))
+        } catch (error) {
+          setState(current => ({
+            ...current,
+            isLoading: false,
+            error: error instanceof Error ? error.message : "次のページの取得に失敗しました",
+          }))
+        }
       }
       
-      const ordersData: OrdersResponse = await response.json()
+      fetchNextPage()
       
-      const sortedOrders = ordersData.orders.sort((a, b) => 
-        new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
-      )
-      
-      setState(prev => ({
+      return {
         ...prev,
-        orders: sortedOrders,
-        isLoading: false,
-        currentPage: prev.currentPage + 1,
-        nextToken: ordersData.nextToken,
-        hasMorePages: !!ordersData.nextToken,
-      }))
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "次のページの取得に失敗しました",
-      }))
-    }
-  }, [state.nextToken, state.isLoading])
+        isLoading: true,
+        error: null
+      }
+    })
+  }, [])
 
   const goToPreviousPage = useCallback(async () => {
-    if (state.currentPage <= 1 || state.isLoading) return
-    
-    // 前のページへの移動は複雑なため、単純に最初からフェッチし直す
-    await refreshOrders()
-  }, [state.currentPage, state.isLoading, refreshOrders])
+    setState(prev => {
+      if (prev.currentPage <= 1 || prev.isLoading) return prev
+      
+      // 前のページへの移動は複雑なため、単純に最初からフェッチし直す（保存データを優先）
+      refreshOrders(undefined, false)
+      
+      return prev
+    })
+  }, [refreshOrders])
 
   const goToPage = useCallback(async (page: number) => {
-    if (page === state.currentPage || state.isLoading) return
-    
-    // 指定ページへの移動は複雑なため、最初からフェッチし直す
-    await refreshOrders()
-  }, [state.currentPage, state.isLoading, refreshOrders])
+    setState(prev => {
+      if (page === prev.currentPage || prev.isLoading) return prev
+      
+      // 指定ページへの移動は複雑なため、最初からフェッチし直す（保存データを優先）
+      refreshOrders(undefined, false)
+      
+      return prev
+    })
+  }, [refreshOrders])
 
   const filterByDateRange = useCallback(async (startDate?: string, endDate?: string) => {
     await refreshOrders({
@@ -170,13 +192,13 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
   }, [refreshOrders])
 
 
-  // 初回ロード時にデータ取得
+  // 初回ロード時にデータ取得（保存されたデータを優先）
   const loadInitialData = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
     
     try {
       const searchParams = new URLSearchParams()
-      searchParams.set("refresh", "true")
+      // 初回ロードでは強制リフレッシュしない（保存データを優先）
       searchParams.set("maxResults", "100")
       
       const url = `/api/orders?${searchParams.toString()}`

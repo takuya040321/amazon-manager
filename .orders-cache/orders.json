@@ -1,0 +1,3387 @@
+{
+  "orders": [
+    {
+      "id": "250-8035489-6292642",
+      "amazonOrderId": "250-8035489-6292642",
+      "purchaseDate": "2025-07-10T03:28:21Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "0pxr3q0gfb2dm0l@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "0pxr3q0gfb2dm0l@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-0603039-4473449",
+      "amazonOrderId": "249-0603039-4473449",
+      "purchaseDate": "2025-07-10T04:57:16Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "22d9tx78s82glkh@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "22d9tx78s82glkh@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-4492885-2546269",
+      "amazonOrderId": "249-4492885-2546269",
+      "purchaseDate": "2025-07-10T10:08:54Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3250,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "v32zkb5stbtb0r0@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "v32zkb5stbtb0r0@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-3375195-4911064",
+      "amazonOrderId": "503-3375195-4911064",
+      "purchaseDate": "2025-07-10T10:19:29Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2851,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "n65v6bmyqx0455v@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "n65v6bmyqx0455v@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-3971653-4744601",
+      "amazonOrderId": "249-3971653-4744601",
+      "purchaseDate": "2025-07-10T11:50:57Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 9400,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "8p2y1mgswj40nsl@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "8p2y1mgswj40nsl@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-7449842-6347048",
+      "amazonOrderId": "249-7449842-6347048",
+      "purchaseDate": "2025-07-10T13:09:41Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2673,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "thy36qbgz9p2j45@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "thy36qbgz9p2j45@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-5128491-3336603",
+      "amazonOrderId": "250-5128491-3336603",
+      "purchaseDate": "2025-07-10T14:52:09Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "yh86sh9htxvdp0k@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "yh86sh9htxvdp0k@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-5058348-0124630",
+      "amazonOrderId": "503-5058348-0124630",
+      "purchaseDate": "2025-07-10T15:09:24Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "h2j4fk63ts009nj@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "h2j4fk63ts009nj@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-3303243-7579051",
+      "amazonOrderId": "249-3303243-7579051",
+      "purchaseDate": "2025-07-10T15:29:49Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1800,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "8mxppl9xvqf36l7@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "8mxppl9xvqf36l7@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-8034295-2097459",
+      "amazonOrderId": "249-8034295-2097459",
+      "purchaseDate": "2025-07-10T15:47:54Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3360,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "90v7f5ccmlvc0bm@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "90v7f5ccmlvc0bm@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-2421269-4093411",
+      "amazonOrderId": "249-2421269-4093411",
+      "purchaseDate": "2025-07-10T16:02:33Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "ylwclsf6jt5sbh8@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "ylwclsf6jt5sbh8@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-7086042-7775835",
+      "amazonOrderId": "503-7086042-7775835",
+      "purchaseDate": "2025-07-10T16:22:03Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2673,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6xcnjw5vvv2vb9q@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6xcnjw5vvv2vb9q@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-5771707-0502247",
+      "amazonOrderId": "249-5771707-0502247",
+      "purchaseDate": "2025-07-10T16:22:18Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2900,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "nf38c32lgxd34x1@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "nf38c32lgxd34x1@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-7303340-0829415",
+      "amazonOrderId": "250-7303340-0829415",
+      "purchaseDate": "2025-07-10T22:29:19Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6s4d61cjfvjklvf@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6s4d61cjfvjklvf@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-7118316-4983824",
+      "amazonOrderId": "249-7118316-4983824",
+      "purchaseDate": "2025-07-10T22:44:43Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1840,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "jv26twrhwq00fr1@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "jv26twrhwq00fr1@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-5226013-5872665",
+      "amazonOrderId": "503-5226013-5872665",
+      "purchaseDate": "2025-07-10T23:29:51Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1950,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "ljqjht99lq018hg@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "ljqjht99lq018hg@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-2227514-4290219",
+      "amazonOrderId": "503-2227514-4290219",
+      "purchaseDate": "2025-07-10T23:48:14Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1580,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "jh0gh48q3tz62hr@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "jh0gh48q3tz62hr@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-5413396-1790239",
+      "amazonOrderId": "250-5413396-1790239",
+      "purchaseDate": "2025-07-11T00:31:40Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 920,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "57rgvk4bf32n0qd@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "57rgvk4bf32n0qd@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-0534711-1197419",
+      "amazonOrderId": "249-0534711-1197419",
+      "purchaseDate": "2025-07-11T01:00:33Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2900,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "1vjttgxs5bks8xd@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "1vjttgxs5bks8xd@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-2493960-3643848",
+      "amazonOrderId": "503-2493960-3643848",
+      "purchaseDate": "2025-07-11T01:06:26Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "wltl9gjtlnhmky5@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "wltl9gjtlnhmky5@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3498279-9247820",
+      "amazonOrderId": "250-3498279-9247820",
+      "purchaseDate": "2025-07-11T02:44:53Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2250,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "pdxyr9cr6qx8tdv@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "pdxyr9cr6qx8tdv@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-9478070-6395041",
+      "amazonOrderId": "250-9478070-6395041",
+      "purchaseDate": "2025-07-11T03:12:58Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1580,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "dmt5xpnpzd27nsx@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "dmt5xpnpzd27nsx@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-0388963-1012626",
+      "amazonOrderId": "503-0388963-1012626",
+      "purchaseDate": "2025-07-11T04:43:58Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 4600,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "pwycb4wtbnc5jbw@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "pwycb4wtbnc5jbw@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-4903710-7039808",
+      "amazonOrderId": "250-4903710-7039808",
+      "purchaseDate": "2025-07-11T08:11:30Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "z7xp6j4q7h0t2sq@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "z7xp6j4q7h0t2sq@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-6213963-5670230",
+      "amazonOrderId": "250-6213963-5670230",
+      "purchaseDate": "2025-07-11T08:19:54Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-8229337-5987821",
+      "amazonOrderId": "250-8229337-5987821",
+      "purchaseDate": "2025-07-11T08:32:00Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "zn3v7l3pm3992sk@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "zn3v7l3pm3992sk@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-1465501-4899831",
+      "amazonOrderId": "249-1465501-4899831",
+      "purchaseDate": "2025-07-11T08:41:28Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2200,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "0tvbqn26kc9568w@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "0tvbqn26kc9568w@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-6296622-3773411",
+      "amazonOrderId": "250-6296622-3773411",
+      "purchaseDate": "2025-07-11T09:03:18Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1580,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "mg8t89dv0lfzg2x@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "mg8t89dv0lfzg2x@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-1878866-1467864",
+      "amazonOrderId": "503-1878866-1467864",
+      "purchaseDate": "2025-07-11T09:15:17Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2950,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "890tr9zhxsx1yd6@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "890tr9zhxsx1yd6@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-7624530-5306249",
+      "amazonOrderId": "503-7624530-5306249",
+      "purchaseDate": "2025-07-11T09:40:35Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2950,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "5106xk4qvk6y9rl@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "5106xk4qvk6y9rl@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-9331916-6087835",
+      "amazonOrderId": "250-9331916-6087835",
+      "purchaseDate": "2025-07-11T10:39:05Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2196,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "mvgc7dtf5dhsfmx@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "mvgc7dtf5dhsfmx@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-6592287-8871009",
+      "amazonOrderId": "249-6592287-8871009",
+      "purchaseDate": "2025-07-11T11:01:57Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "zzhtnczht1c34k3@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "zzhtnczht1c34k3@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-8790015-0799033",
+      "amazonOrderId": "250-8790015-0799033",
+      "purchaseDate": "2025-07-11T11:46:16Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 8000,
+      "currency": "JPY",
+      "numberOfItemsShipped": 4,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "0npgm372mnhb4ph@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "0npgm372mnhb4ph@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 4,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-9344588-7185422",
+      "amazonOrderId": "249-9344588-7185422",
+      "purchaseDate": "2025-07-11T12:19:02Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2200,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "47dlthx3dvbqqyd@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "47dlthx3dvbqqyd@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-4726506-4547063",
+      "amazonOrderId": "250-4726506-4547063",
+      "purchaseDate": "2025-07-11T12:36:52Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "m0951tgffdfdywz@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "m0951tgffdfdywz@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-1242778-6405457",
+      "amazonOrderId": "250-1242778-6405457",
+      "purchaseDate": "2025-07-11T13:36:16Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2900,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "75tz7z7k06119fk@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "75tz7z7k06119fk@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-5207385-0619833",
+      "amazonOrderId": "503-5207385-0619833",
+      "purchaseDate": "2025-07-11T14:04:45Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-4297182-3195848",
+      "amazonOrderId": "250-4297182-3195848",
+      "purchaseDate": "2025-07-11T16:29:55Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2290,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "3ks05cm9ysqkm57@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "3ks05cm9ysqkm57@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-6989253-6112646",
+      "amazonOrderId": "250-6989253-6112646",
+      "purchaseDate": "2025-07-11T17:18:26Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2850,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "0c5zzb4s5pbx72f@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "0c5zzb4s5pbx72f@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-9784244-4781419",
+      "amazonOrderId": "249-9784244-4781419",
+      "purchaseDate": "2025-07-11T17:28:57Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2650,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "3gvbkdszb80h7qg@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "3gvbkdszb80h7qg@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3984573-0313464",
+      "amazonOrderId": "250-3984573-0313464",
+      "purchaseDate": "2025-07-11T22:40:14Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2800,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "mb6nz8yng43c0xs@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "mb6nz8yng43c0xs@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-9826702-6577459",
+      "amazonOrderId": "503-9826702-6577459",
+      "purchaseDate": "2025-07-11T22:44:50Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "rtyzhxqprc1svrt@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "rtyzhxqprc1svrt@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-7136289-4744660",
+      "amazonOrderId": "503-7136289-4744660",
+      "purchaseDate": "2025-07-12T02:31:44Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2450,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "3kgk4k6tgmrvqpz@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "3kgk4k6tgmrvqpz@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-4526876-6152665",
+      "amazonOrderId": "249-4526876-6152665",
+      "purchaseDate": "2025-07-12T02:48:21Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "xhbslddwnx2hc2s@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "xhbslddwnx2hc2s@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-7468924-2544636",
+      "amazonOrderId": "503-7468924-2544636",
+      "purchaseDate": "2025-07-12T03:03:09Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2158,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "zgjs8r9x158r73s@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "zgjs8r9x158r73s@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-2065590-4914225",
+      "amazonOrderId": "249-2065590-4914225",
+      "purchaseDate": "2025-07-12T03:29:21Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "y9r827q1c4mlp4y@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "y9r827q1c4mlp4y@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-7141084-4182216",
+      "amazonOrderId": "250-7141084-4182216",
+      "purchaseDate": "2025-07-12T04:37:58Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3360,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6g040gk21j0qgvl@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6g040gk21j0qgvl@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-0178081-3564657",
+      "amazonOrderId": "250-0178081-3564657",
+      "purchaseDate": "2025-07-12T04:44:22Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1860,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "znh7k54ml9kbmyj@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "znh7k54ml9kbmyj@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-7688383-2393413",
+      "amazonOrderId": "503-7688383-2393413",
+      "purchaseDate": "2025-07-12T04:47:45Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1670,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "lh3smp7lr2qjfl3@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "lh3smp7lr2qjfl3@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-4474121-0828627",
+      "amazonOrderId": "503-4474121-0828627",
+      "purchaseDate": "2025-07-12T06:10:29Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-7541595-3229434",
+      "amazonOrderId": "250-7541595-3229434",
+      "purchaseDate": "2025-07-12T06:56:24Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2851,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "gdv6d5v0hl4j6wl@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "gdv6d5v0hl4j6wl@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3915373-8337415",
+      "amazonOrderId": "250-3915373-8337415",
+      "purchaseDate": "2025-07-12T09:19:52Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2850,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "kd3nqszxbq94jkv@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "kd3nqszxbq94jkv@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-3696486-0934245",
+      "amazonOrderId": "503-3696486-0934245",
+      "purchaseDate": "2025-07-12T10:44:32Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "cbm669f5290mxf1@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "cbm669f5290mxf1@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-7497446-0308613",
+      "amazonOrderId": "250-7497446-0308613",
+      "purchaseDate": "2025-07-12T11:16:03Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "7v2xb2q506q320y@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "7v2xb2q506q320y@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-7773465-2101413",
+      "amazonOrderId": "503-7773465-2101413",
+      "purchaseDate": "2025-07-12T12:09:14Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2970,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "frr4sr08z4fptz5@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "frr4sr08z4fptz5@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-6610419-2120616",
+      "amazonOrderId": "249-6610419-2120616",
+      "purchaseDate": "2025-07-12T12:22:25Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "dyt2n56sqgd4g7t@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "dyt2n56sqgd4g7t@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-7831594-9360611",
+      "amazonOrderId": "250-7831594-9360611",
+      "purchaseDate": "2025-07-12T13:03:04Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-0152272-9482218",
+      "amazonOrderId": "249-0152272-9482218",
+      "purchaseDate": "2025-07-12T13:40:00Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "v2vz630731w50dm@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "v2vz630731w50dm@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-9706251-3747056",
+      "amazonOrderId": "250-9706251-3747056",
+      "purchaseDate": "2025-07-12T14:25:02Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-1808242-8269406",
+      "amazonOrderId": "249-1808242-8269406",
+      "purchaseDate": "2025-07-12T15:07:21Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1840,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "bksmdlqkks2nn92@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "bksmdlqkks2nn92@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-2485583-4657400",
+      "amazonOrderId": "249-2485583-4657400",
+      "purchaseDate": "2025-07-12T15:10:33Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "3jz42swqr90vv87@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "3jz42swqr90vv87@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-4134102-9136629",
+      "amazonOrderId": "503-4134102-9136629",
+      "purchaseDate": "2025-07-12T20:14:10Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "jhts6ndfdt6hskr@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "jhts6ndfdt6hskr@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-1916139-2711001",
+      "amazonOrderId": "250-1916139-2711001",
+      "purchaseDate": "2025-07-12T21:09:20Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "h1bj2168g578wy3@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "h1bj2168g578wy3@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-0888633-9505406",
+      "amazonOrderId": "249-0888633-9505406",
+      "purchaseDate": "2025-07-12T22:26:14Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 11200,
+      "currency": "JPY",
+      "numberOfItemsShipped": 4,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "wmbp2c62v54d9cc@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "wmbp2c62v54d9cc@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 4,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-4656023-9292667",
+      "amazonOrderId": "249-4656023-9292667",
+      "purchaseDate": "2025-07-12T22:43:54Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1670,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "3skbw89d64mbc9r@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "3skbw89d64mbc9r@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-3040813-3661426",
+      "amazonOrderId": "249-3040813-3661426",
+      "purchaseDate": "2025-07-13T01:17:25Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6kk605zhgbhv88z@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6kk605zhgbhv88z@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-0112814-9644621",
+      "amazonOrderId": "503-0112814-9644621",
+      "purchaseDate": "2025-07-13T01:36:33Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2850,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "n92m18srlgmrx6c@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "n92m18srlgmrx6c@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-1099189-8079069",
+      "amazonOrderId": "250-1099189-8079069",
+      "purchaseDate": "2025-07-13T03:48:20Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-2977042-3475841",
+      "amazonOrderId": "503-2977042-3475841",
+      "purchaseDate": "2025-07-13T04:35:56Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1860,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "sdljtl019pzpc8j@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "sdljtl019pzpc8j@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-2767775-0101437",
+      "amazonOrderId": "503-2767775-0101437",
+      "purchaseDate": "2025-07-13T05:13:02Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2250,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "s1v6lt96t50kdzh@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "s1v6lt96t50kdzh@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-5909816-5865421",
+      "amazonOrderId": "503-5909816-5865421",
+      "purchaseDate": "2025-07-13T05:56:13Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 5400,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6m4lskdvjvj2sgf@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6m4lskdvjvj2sgf@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-6669915-3713415",
+      "amazonOrderId": "249-6669915-3713415",
+      "purchaseDate": "2025-07-13T06:02:25Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2350,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "x8d4bc659n2ztlg@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "x8d4bc659n2ztlg@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-0428928-8567000",
+      "amazonOrderId": "250-0428928-8567000",
+      "purchaseDate": "2025-07-13T06:03:40Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 5398,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "cr48yd5mf347myc@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "cr48yd5mf347myc@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-4826790-9867864",
+      "amazonOrderId": "249-4826790-9867864",
+      "purchaseDate": "2025-07-13T07:02:01Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-5597546-4513450",
+      "amazonOrderId": "249-5597546-4513450",
+      "purchaseDate": "2025-07-13T08:20:20Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1580,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "t0qdmh555cy080k@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "t0qdmh555cy080k@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-7306371-1265439",
+      "amazonOrderId": "249-7306371-1265439",
+      "purchaseDate": "2025-07-13T09:15:02Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "13gbysvpjpk0wld@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "13gbysvpjpk0wld@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-0365152-1566246",
+      "amazonOrderId": "250-0365152-1566246",
+      "purchaseDate": "2025-07-13T09:51:15Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2910,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "v9jgg8c7l69dmpm@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "v9jgg8c7l69dmpm@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-0211766-1036632",
+      "amazonOrderId": "503-0211766-1036632",
+      "purchaseDate": "2025-07-13T10:40:49Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2380,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "gm0hz2kz4q4qmmv@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "gm0hz2kz4q4qmmv@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-0130895-6527045",
+      "amazonOrderId": "249-0130895-6527045",
+      "purchaseDate": "2025-07-13T10:54:35Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "56z08kymbnzpsh0@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "56z08kymbnzpsh0@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-8049640-9799839",
+      "amazonOrderId": "250-8049640-9799839",
+      "purchaseDate": "2025-07-13T11:17:51Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 3590,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "j1q2ly613k3cy82@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "j1q2ly613k3cy82@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-1288846-4439828",
+      "amazonOrderId": "249-1288846-4439828",
+      "purchaseDate": "2025-07-13T11:30:39Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 4000,
+      "currency": "JPY",
+      "numberOfItemsShipped": 2,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "wf1vxs21g5pm1vw@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "wf1vxs21g5pm1vw@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 2,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3125873-9982238",
+      "amazonOrderId": "250-3125873-9982238",
+      "purchaseDate": "2025-07-13T12:04:39Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1150,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "z5wd3y8r67j047w@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "z5wd3y8r67j047w@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-6850933-2095043",
+      "amazonOrderId": "503-6850933-2095043",
+      "purchaseDate": "2025-07-13T12:25:34Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2000,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "hp71d41gs5r3r19@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "hp71d41gs5r3r19@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-7650804-5580603",
+      "amazonOrderId": "250-7650804-5580603",
+      "purchaseDate": "2025-07-13T12:26:33Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "njgh98p8qm58k68@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "njgh98p8qm58k68@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-6903354-8406252",
+      "amazonOrderId": "249-6903354-8406252",
+      "purchaseDate": "2025-07-13T12:34:07Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1670,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "b72sxjqh4p00n8r@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "b72sxjqh4p00n8r@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-0903827-1369467",
+      "amazonOrderId": "250-0903827-1369467",
+      "purchaseDate": "2025-07-13T14:39:55Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1800,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "37tclcpx4x35nzn@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "37tclcpx4x35nzn@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-2009321-8287010",
+      "amazonOrderId": "503-2009321-8287010",
+      "purchaseDate": "2025-07-13T14:56:38Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2250,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "wjc15b5tcpft6pp@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "wjc15b5tcpft6pp@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-6324342-7917429",
+      "amazonOrderId": "503-6324342-7917429",
+      "purchaseDate": "2025-07-13T15:27:38Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "yhkqxlw7hnt4jj5@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "yhkqxlw7hnt4jj5@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3723209-4794229",
+      "amazonOrderId": "250-3723209-4794229",
+      "purchaseDate": "2025-07-13T15:28:20Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1720,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "td88l5c0nplrl6w@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "td88l5c0nplrl6w@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-8668877-4651814",
+      "amazonOrderId": "250-8668877-4651814",
+      "purchaseDate": "2025-07-13T21:19:24Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3845291-8149406",
+      "amazonOrderId": "250-3845291-8149406",
+      "purchaseDate": "2025-07-13T22:06:02Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "MFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 4300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "d7v2qf0yjxyv2q5@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "d7v2qf0yjxyv2q5@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "shippingAddress": {
+        "StateOrRegion": "福島県",
+        "AddressLine1": "null",
+        "PostalCode": "9601231",
+        "City": "福島市",
+        "CountryCode": "JP",
+        "Name": "null"
+      },
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-9053350-2412669",
+      "amazonOrderId": "503-9053350-2412669",
+      "purchaseDate": "2025-07-14T02:15:33Z",
+      "orderStatus": "キャンセル",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 0,
+      "currency": "JPY",
+      "numberOfItemsShipped": 0,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "buyerInfo": {}
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-2948850-2822247",
+      "amazonOrderId": "249-2948850-2822247",
+      "purchaseDate": "2025-07-14T02:26:17Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "8s3sx1l4fdql3pw@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "8s3sx1l4fdql3pw@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-4264727-1798221",
+      "amazonOrderId": "503-4264727-1798221",
+      "purchaseDate": "2025-07-14T02:37:49Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2626,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "fzv45xmd3x65xmr@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "fzv45xmd3x65xmr@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3585641-6137419",
+      "amazonOrderId": "250-3585641-6137419",
+      "purchaseDate": "2025-07-14T03:05:01Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2250,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "1j1z5dsfjnxm31k@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "1j1z5dsfjnxm31k@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-6698575-1495043",
+      "amazonOrderId": "503-6698575-1495043",
+      "purchaseDate": "2025-07-14T03:29:55Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1150,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "gzvnrb9j3dwf2s9@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "gzvnrb9j3dwf2s9@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-9910473-7732633",
+      "amazonOrderId": "503-9910473-7732633",
+      "purchaseDate": "2025-07-14T04:32:53Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1800,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6l8681my9g81718@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6l8681my9g81718@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "250-3181937-2892600",
+      "amazonOrderId": "250-3181937-2892600",
+      "purchaseDate": "2025-07-14T05:17:36Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2980,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "6hrcs0g8n522s65@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "6hrcs0g8n522s65@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "503-8253254-6908602",
+      "amazonOrderId": "503-8253254-6908602",
+      "purchaseDate": "2025-07-14T06:07:49Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 2300,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "70822ct9cxn6jp8@marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "70822ct9cxn6jp8@marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    },
+    {
+      "id": "249-3684178-2739003",
+      "amazonOrderId": "249-3684178-2739003",
+      "purchaseDate": "2025-07-14T06:17:21Z",
+      "orderStatus": "発送済み",
+      "fulfillmentChannel": "AFN",
+      "salesChannel": "Amazon.co.jp",
+      "totalAmount": 1890,
+      "currency": "JPY",
+      "numberOfItemsShipped": 1,
+      "numberOfItemsUnshipped": 0,
+      "customer": {
+        "email": "k959xmz9hsbl19j@m.marketplace.amazon.co.jp",
+        "buyerInfo": {
+          "BuyerEmail": "k959xmz9hsbl19j@m.marketplace.amazon.co.jp"
+        }
+      },
+      "items": [
+        {
+          "id": "basic",
+          "title": "商品詳細情報なし",
+          "asin": "",
+          "quantity": 1,
+          "price": 0,
+          "imageUrl": "",
+          "brand": "",
+          "manufacturer": "",
+          "productType": ""
+        }
+      ],
+      "reviewRequestSent": false,
+      "reviewRequestStatus": "pending",
+      "solicitationReason": "未チェック"
+    }
+  ],
+  "lastUpdated": "2025-08-11T22:22:42.939Z",
+  "totalCount": 100
+}
