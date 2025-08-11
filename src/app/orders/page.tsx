@@ -51,14 +51,10 @@ export default function OrdersPage() {
     currentPage,
     totalPages,
     itemsPerPage,
-    isBackgroundLoading,
-    backgroundProgress,
-    cachedTotalCount,
     refreshOrders, 
     goToNextPage,
     goToPreviousPage,
-    filterByDateRange,
-    getFilteredOrdersFromCache 
+    filterByDateRange
   } = useOrders()
   const { sendBatchReviewRequests, isLoading: isReviewLoading, error: reviewError } = useReviewRequests()
   const { checkEligibility, isChecking: isEligibilityChecking, results: eligibilityResults } = useEligibilityCheck()
@@ -79,17 +75,6 @@ export default function OrdersPage() {
   // 日付フィルターが変更された時の処理
   const handleDateFilterApply = async () => {
     const params = getDateFilterParams()
-    
-    // キャッシュからフィルターできるか確認
-    const filteredFromCache = getFilteredOrdersFromCache(params.createdAfter, params.createdBefore)
-    
-    if (filteredFromCache.length > 0 && cachedTotalCount > 100) {
-      // キャッシュに十分なデータがある場合は即座に表示
-      console.log(`[DEBUG] キャッシュから日付フィルター適用: ${filteredFromCache.length}件`)
-      
-      // TODO: キャッシュデータで状態を更新する機能を実装
-      alert(`キャッシュから${filteredFromCache.length}件をフィルターしました。現在の実装では以下のAPI取得も実行します。`)
-    }
     
     await filterByDateRange(params.createdAfter, params.createdBefore)
   }
@@ -264,20 +249,6 @@ export default function OrdersPage() {
             <h1 className="text-3xl font-bold tracking-tight">レビュー依頼</h1>
             <p className="text-muted-foreground">
               Amazon注文からレビュー依頼を送信（商品詳細・依頼可能性込みで表示）
-              <br />
-              <small className="text-xs text-green-600">
-                高速化: 段階的表示(基本情報→商品詳細) + バックグラウンドキャッシュ
-              </small>
-              {isBackgroundLoading && (
-                <span className="ml-2 text-xs text-blue-600">
-                  📥 バックグラウンド取得中: {backgroundProgress.status}
-                </span>
-              )}
-              {!isBackgroundLoading && cachedTotalCount > totalCount && (
-                <span className="ml-2 text-xs text-purple-600">
-                  ⚡ キャッシュ済み: {cachedTotalCount}件 (即座に表示可能)
-                </span>
-              )}
               {lastUpdated && (
                 <span className="ml-2 text-sm">
                   （最終更新: {new Date(lastUpdated).toLocaleString("ja-JP")}）
@@ -366,9 +337,6 @@ export default function OrdersPage() {
                   </>
                 ) : (
                   <>
-                    {cachedTotalCount > 100 && (
-                      <span className="mr-1">⚡</span>
-                    )}
                     期間で絞り込み
                   </>
                 )}
@@ -377,23 +345,6 @@ export default function OrdersPage() {
           </CardContent>
         </Card>
 
-        {/* バックグラウンド取得状況の表示 */}
-        {isBackgroundLoading && (
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
-                  <span className="text-sm text-blue-800">{backgroundProgress.status}</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-blue-600">キャッシュ済み</div>
-                  <div className="text-sm font-semibold text-blue-800">{backgroundProgress.current}件</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <Card>
@@ -403,11 +354,6 @@ export default function OrdersPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalOrders}</div>
-              {cachedTotalCount > totalCount && (
-                <p className="text-xs text-purple-600">
-                  キャッシュ: {cachedTotalCount}件
-                </p>
-              )}
               <p className="text-xs text-muted-foreground">
                 {isDateRangeSelected ? "選択期間" : "過去1ヶ月間（7日前まで）"}
               </p>
@@ -517,7 +463,6 @@ export default function OrdersPage() {
                     </TableHead>
                     <TableHead>注文ID</TableHead>
                     <TableHead>注文日</TableHead>
-                    <TableHead>商品</TableHead>
                     <TableHead>金額</TableHead>
                     <TableHead>商品数</TableHead>
                     <TableHead>配送方法</TableHead>
@@ -545,57 +490,6 @@ export default function OrdersPage() {
                         </TableCell>
                         <TableCell>
                           {new Date(order.purchaseDate).toLocaleDateString("ja-JP")}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            {/* 商品画像 */}
-                            {order.items.length > 0 && order.items[0].imageUrl && order.items[0].id !== "error" && order.items[0].id !== "loading" ? (
-                              <img
-                                src={order.items[0].imageUrl}
-                                alt={order.items[0].title}
-                                className="w-10 h-10 object-cover rounded border"
-                                onError={(e) => {
-                                  const target = e.currentTarget
-                                  target.style.display = 'none'
-                                  const fallback = target.nextElementSibling as HTMLElement
-                                  if (fallback) fallback.style.display = 'flex'
-                                }}
-                              />
-                            ) : null}
-                            
-                            {/* ローディング中のアイコン */}
-                            {order.items.length > 0 && order.items[0].id === "loading" ? (
-                              <div className="w-10 h-10 bg-blue-50 rounded border flex items-center justify-center">
-                                <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />
-                              </div>
-                            ) : (
-                              <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center" 
-                                   style={{ display: order.items.length > 0 && order.items[0].imageUrl && order.items[0].id !== "error" && order.items[0].id !== "loading" ? 'none' : 'flex' }}>
-                                <Package className="h-5 w-5 text-gray-400" />
-                              </div>
-                            )}
-                            
-                            {/* 商品情報 */}
-                            <div className="min-w-0">
-                              <div className={`text-sm font-medium truncate ${
-                                order.items.length > 0 && order.items[0].id === "loading" 
-                                  ? "text-blue-600 animate-pulse" 
-                                  : ""
-                              }`}>
-                                {order.items.length > 0 ? order.items[0].title : "商品情報なし"}
-                              </div>
-                              {order.items.length > 1 && (
-                                <div className="text-xs text-muted-foreground">
-                                  他{order.items.length - 1}点
-                                </div>
-                              )}
-                              {order.items.length > 0 && order.items[0].id === "loading" && (
-                                <div className="text-xs text-blue-500">
-                                  詳細情報取得中...
-                                </div>
-                              )}
-                            </div>
-                          </div>
                         </TableCell>
                         <TableCell>¥{order.totalAmount.toLocaleString()}</TableCell>
                         <TableCell>{order.numberOfItemsShipped + order.numberOfItemsUnshipped}個</TableCell>
@@ -653,13 +547,8 @@ export default function OrdersPage() {
               ページ {currentPage} / {totalPages}
             </span>
             <span className="text-xs text-muted-foreground border-l pl-2 ml-2">
-              {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, cachedTotalCount || totalCount)} 件
+              {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalCount)} 件
             </span>
-            {cachedTotalCount > totalCount && (
-              <span className="text-xs text-purple-600">
-                (キャッシュ: {cachedTotalCount}件)
-              </span>
-            )}
           </div>
           
           {/* 次のページ */}

@@ -15,14 +15,6 @@ interface UseOrdersState {
   currentPage: number
   itemsPerPage: number
   totalPages: number
-  // バックグラウンド取得状態
-  isBackgroundLoading: boolean
-  backgroundProgress: {
-    current: number
-    total: number
-    status: string
-  }
-  cachedTotalCount: number
 }
 
 interface UseOrdersActions {
@@ -46,18 +38,9 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     currentPage: 1,
     itemsPerPage: 100,
     totalPages: 1,
-    isBackgroundLoading: false,
-    backgroundProgress: {
-      current: 0,
-      total: 0,
-      status: "待機中"
-    },
-    cachedTotalCount: 0,
   })
 
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const backgroundJobRef = useRef<{ cancel: boolean }>({ cancel: false })
-  const allOrdersCacheRef = useRef<Order[]>([])
 
   const refreshOrders = useCallback(async (dateParams?: { createdAfter?: string; createdBefore?: string }) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
@@ -96,146 +79,17 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         totalCount: ordersData.totalCount || sortedOrders.length,
         nextToken: ordersData.nextToken,
         hasMorePages: !!ordersData.nextToken,
+        currentPage: 1,
+        itemsPerPage: 100,
+        totalPages: Math.ceil((ordersData.totalCount || sortedOrders.length) / 100),
       })
     } catch (error) {
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : "未知のエラーが発生しました",
+        error: error instanceof Error ? error.message : "注文データの取得に失敗しました",
       }))
     }
-  }, [])
-
-  // ページネーション: 次のページへ移動
-  const goToNextPage = useCallback(async () => {
-    if (state.isLoading) return
-    
-    const nextPage = state.currentPage + 1
-    const startIndex = (nextPage - 1) * state.itemsPerPage
-    const endIndex = startIndex + state.itemsPerPage
-    
-    // キャッシュから優先的に表示
-    if (allOrdersCacheRef.current.length >= endIndex) {
-      // キャッシュに十分なデータがある場合
-      const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
-      
-      setState(prev => ({
-        ...prev,
-        orders: pageOrders,
-        currentPage: nextPage,
-        totalPages: Math.ceil(allOrdersCacheRef.current.length / state.itemsPerPage),
-        hasMorePages: allOrdersCacheRef.current.length > endIndex,
-      }))
-      
-      console.log(`[DEBUG] キャッシュからページ${nextPage}を表示 (${pageOrders.length}件)`)
-      return
-    }
-    
-    // キャッシュに十分なデータがない場合はAPI取得
-    if (!state.nextToken) return
-    
-    setState(prev => ({ ...prev, isLoading: true }))
-
-    try {
-      const url = `/api/orders?nextToken=${encodeURIComponent(state.nextToken)}`
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "追加注文データの取得に失敗しました")
-      }
-
-      const ordersData: OrdersResponse = await response.json()
-      
-      // キャッシュを更新
-      const cacheExistingIds = new Set(allOrdersCacheRef.current.map(order => order.id))
-      const newOrders = ordersData.orders.filter(order => !cacheExistingIds.has(order.id))
-      allOrdersCacheRef.current = [...allOrdersCacheRef.current, ...newOrders]
-      
-      // 次のページを表示
-      const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
-
-      setState(prev => ({
-        ...prev,
-        orders: pageOrders,
-        isLoading: false,
-        error: null,
-        lastUpdated: ordersData.lastUpdated,
-        nextToken: ordersData.nextToken,
-        currentPage: nextPage,
-        totalPages: Math.ceil(allOrdersCacheRef.current.length / state.itemsPerPage),
-        hasMorePages: allOrdersCacheRef.current.length > endIndex || !!ordersData.nextToken,
-        cachedTotalCount: allOrdersCacheRef.current.length
-      }))
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "未知のエラーが発生しました",
-      }))
-    }
-  }, [state.currentPage, state.itemsPerPage, state.nextToken, state.isLoading])
-  
-  // ページネーション: 前のページへ移動
-  const goToPreviousPage = useCallback(async () => {
-    if (state.currentPage <= 1 || state.isLoading) return
-    
-    const previousPage = state.currentPage - 1
-    const startIndex = (previousPage - 1) * state.itemsPerPage
-    const endIndex = startIndex + state.itemsPerPage
-    
-    // キャッシュから表示
-    const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
-    
-    setState(prev => ({
-      ...prev,
-      orders: pageOrders,
-      currentPage: previousPage,
-      hasMorePages: allOrdersCacheRef.current.length > endIndex || !!prev.nextToken,
-    }))
-    
-    console.log(`[DEBUG] キャッシュからページ${previousPage}を表示 (${pageOrders.length}件)`)
-  }, [state.currentPage, state.itemsPerPage, state.isLoading])
-  
-  // ページネーション: 指定ページへ移動
-  const goToPage = useCallback(async (page: number) => {
-    if (page < 1 || page === state.currentPage || state.isLoading) return
-    
-    const startIndex = (page - 1) * state.itemsPerPage
-    const endIndex = startIndex + state.itemsPerPage
-    
-    // キャッシュから表示
-    if (allOrdersCacheRef.current.length >= endIndex) {
-      const pageOrders = allOrdersCacheRef.current.slice(startIndex, endIndex)
-      
-      setState(prev => ({
-        ...prev,
-        orders: pageOrders,
-        currentPage: page,
-        totalPages: Math.ceil(allOrdersCacheRef.current.length / state.itemsPerPage),
-        hasMorePages: allOrdersCacheRef.current.length > endIndex || !!prev.nextToken,
-      }))
-      
-      console.log(`[DEBUG] キャッシュからページ${page}を表示 (${pageOrders.length}件)`)
-      return
-    }
-    
-    // キャッシュにデータが不足の場合は現在のページに留まる
-    console.warn(`[DEBUG] ページ${page}のデータがキャッシュにありません`)
-  }, [state.currentPage, state.itemsPerPage, state.isLoading])
-
-  const filterByDateRange = useCallback(async (startDate?: string, endDate?: string) => {
-    const dateParams: { createdAfter?: string; createdBefore?: string } = {}
-    if (startDate) dateParams.createdAfter = startDate
-    if (endDate) dateParams.createdBefore = endDate
-    
-    // 既存のバックグラウンド処理をキャンセル
-    backgroundJobRef.current.cancel = true
-    
-    // キャッシュをクリア（日付フィルタの場合は別データセット）
-    allOrdersCacheRef.current = []
-    
-    await refreshOrders(dateParams)
   }, [])
 
   const getEligibleOrdersForReview = useCallback(async (): Promise<Order[]> => {
@@ -255,14 +109,75 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     }
   }, [])
 
-  // 初回ロード時にデータ取得（簡素化）
+  const goToNextPage = useCallback(async () => {
+    if (!state.nextToken || state.isLoading) return
+    
+    setState(prev => ({ ...prev, isLoading: true, error: null }))
+    
+    try {
+      const searchParams = new URLSearchParams()
+      searchParams.set("nextToken", state.nextToken)
+      
+      const response = await fetch(`/api/orders?${searchParams.toString()}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "次のページの取得に失敗しました")
+      }
+      
+      const ordersData: OrdersResponse = await response.json()
+      
+      const sortedOrders = ordersData.orders.sort((a, b) => 
+        new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
+      )
+      
+      setState(prev => ({
+        ...prev,
+        orders: sortedOrders,
+        isLoading: false,
+        currentPage: prev.currentPage + 1,
+        nextToken: ordersData.nextToken,
+        hasMorePages: !!ordersData.nextToken,
+      }))
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "次のページの取得に失敗しました",
+      }))
+    }
+  }, [state.nextToken, state.isLoading])
+
+  const goToPreviousPage = useCallback(async () => {
+    if (state.currentPage <= 1 || state.isLoading) return
+    
+    // 前のページへの移動は複雑なため、単純に最初からフェッチし直す
+    await refreshOrders()
+  }, [state.currentPage, state.isLoading, refreshOrders])
+
+  const goToPage = useCallback(async (page: number) => {
+    if (page === state.currentPage || state.isLoading) return
+    
+    // 指定ページへの移動は複雑なため、最初からフェッチし直す
+    await refreshOrders()
+  }, [state.currentPage, state.isLoading, refreshOrders])
+
+  const filterByDateRange = useCallback(async (startDate?: string, endDate?: string) => {
+    await refreshOrders({
+      createdAfter: startDate,
+      createdBefore: endDate
+    })
+  }, [refreshOrders])
+
+
+  // 初回ロード時にデータ取得
   const loadInitialData = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
     
     try {
       const searchParams = new URLSearchParams()
       searchParams.set("refresh", "true")
-      searchParams.set("maxResults", "100") // 100件表示に変更
+      searchParams.set("maxResults", "100")
       
       const url = `/api/orders?${searchParams.toString()}`
       
@@ -286,230 +201,28 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
       )
       
-      setState(prev => ({
-        ...prev,
+      const totalCount = ordersData.totalCount || sortedOrders.length
+      
+      setState({
         orders: sortedOrders,
         isLoading: false,
         error: null,
-        lastUpdated: ordersData.lastUpdated || new Date().toISOString(),
-        totalCount: sortedOrders.length,
+        lastUpdated: ordersData.lastUpdated,
+        totalCount,
         nextToken: ordersData.nextToken,
         hasMorePages: !!ordersData.nextToken,
         currentPage: 1,
-        totalPages: Math.max(1, Math.ceil(sortedOrders.length / 100)),
-      }))
+        itemsPerPage: 100,
+        totalPages: Math.ceil(totalCount / 100),
+      })
       
-      // キャッシュを更新
-      allOrdersCacheRef.current = [...sortedOrders]
-      
-      // 段階的表示: 基本情報表示後、すぐに商品詳細を非同期取得
-      if (ordersData.needsEnrichment && sortedOrders.length > 0) {
-        console.log("[DEBUG] 商品詳細の非同期取得を開始")
-        const orderIds = sortedOrders.map(order => order.amazonOrderId)
-        // 少し遅延を入れてUIの描画完了を待つ
-        setTimeout(() => {
-          enrichOrdersWithProductDetails(orderIds)
-        }, 100)
-      }
-      
-      // バックグラウンド取得を開始
-      if (ordersData.nextToken && sortedOrders.length >= 100) {
-        console.log("[DEBUG] バックグラウンドでの追加データ取得を開始")
-        startBackgroundFetching(ordersData.nextToken)
-      }
     } catch (error) {
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : "未知のエラーが発生しました",
+        error: error instanceof Error ? error.message : "データの取得に失敗しました",
       }))
     }
-  }, [])
-
-  // 商品詳細を非同期で取得してUIを更新
-  const enrichOrdersWithProductDetails = useCallback(async (orderIds: string[]) => {
-    if (orderIds.length === 0) return
-    
-    console.log(`[DEBUG] 商品詳細の非同期取得開始: ${orderIds.length}件`)
-    
-    try {
-      const response = await fetch('/api/orders/enrich', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderIds })
-      })
-      
-      if (!response.ok) {
-        throw new Error(`商品詳細取得エラー: ${response.status}`)
-      }
-      
-      const { orders: enrichedOrders } = await response.json()
-      
-      // 既存の注文リストを商品詳細で更新
-      setState(prev => {
-        const updatedOrders = prev.orders.map(order => {
-          const enriched = enrichedOrders.find((e: any) => e.id === order.id)
-          if (enriched) {
-            return {
-              ...order,
-              items: enriched.items,
-              reviewRequestStatus: enriched.reviewRequestStatus,
-              solicitationEligible: enriched.solicitationEligible,
-              solicitationReason: enriched.solicitationReason,
-            }
-          }
-          return order
-        })
-        
-        // キャッシュも更新
-        allOrdersCacheRef.current = allOrdersCacheRef.current.map(order => {
-          const enriched = enrichedOrders.find((e: any) => e.id === order.id)
-          if (enriched) {
-            return {
-              ...order,
-              items: enriched.items,
-              reviewRequestStatus: enriched.reviewRequestStatus,
-              solicitationEligible: enriched.solicitationEligible,
-              solicitationReason: enriched.solicitationReason,
-            }
-          }
-          return order
-        })
-        
-        return {
-          ...prev,
-          orders: updatedOrders
-        }
-      })
-      
-      console.log(`[DEBUG] 商品詳細の非同期取得完了: ${enrichedOrders.length}件`)
-    } catch (error) {
-      console.error('[DEBUG] 商品詳細取得エラー:', error)
-    }
-  }, [])
-
-  // バックグラウンドでの追加データ取得
-  const startBackgroundFetching = useCallback(async (initialNextToken: string, dateParams?: { createdAfter?: string; createdBefore?: string }) => {
-    // 既に実行中の場合はキャンセル
-    backgroundJobRef.current.cancel = true
-    await new Promise(resolve => setTimeout(resolve, 100))
-    backgroundJobRef.current = { cancel: false }
-    
-    setState(prev => ({
-      ...prev,
-      isBackgroundLoading: true,
-      backgroundProgress: {
-        current: prev.totalCount,
-        total: 0,
-        status: "追加データ取得中..."
-      }
-    }))
-    
-    let nextToken = initialNextToken
-    let pageCount = 1
-    
-    try {
-      while (nextToken && !backgroundJobRef.current.cancel) {
-        console.log(`[DEBUG] バックグラウンド取得 - ページ${pageCount}を取得中...`)
-        
-        setState(prev => ({
-          ...prev,
-          backgroundProgress: {
-            ...prev.backgroundProgress,
-            status: `追加データ取得中... (ページ${pageCount})`
-          }
-        }))
-        
-        const searchParams = new URLSearchParams()
-        searchParams.set("nextToken", nextToken)
-        if (dateParams?.createdAfter) {
-          searchParams.set("createdAfter", dateParams.createdAfter)
-        }
-        if (dateParams?.createdBefore) {
-          searchParams.set("createdBefore", dateParams.createdBefore)
-        }
-        
-        const url = `/api/orders?${searchParams.toString()}`
-        const response = await fetch(url)
-        
-        if (!response.ok) {
-          console.error(`[DEBUG] バックグラウンド取得エラー - ページ${pageCount}:`, response.statusText)
-          break
-        }
-        
-        const ordersData: OrdersResponse = await response.json()
-        
-        if (!ordersData.orders || ordersData.orders.length === 0) {
-          console.log(`[DEBUG] バックグラウンド取得完了 - データなし`)
-          break
-        }
-        
-        // キャッシュに追加
-        const newOrders = ordersData.orders.filter(order => 
-          !allOrdersCacheRef.current.some(cached => cached.id === order.id)
-        )
-        
-        allOrdersCacheRef.current = [...allOrdersCacheRef.current, ...newOrders]
-        
-        setState(prev => ({
-          ...prev,
-          cachedTotalCount: allOrdersCacheRef.current.length,
-          backgroundProgress: {
-            current: allOrdersCacheRef.current.length,
-            total: 0,
-            status: `${allOrdersCacheRef.current.length}件をキャッシュ済み`
-          }
-        }))
-        
-        console.log(`[DEBUG] バックグラウンド - ページ${pageCount}: ${newOrders.length}件追加 (累計キャッシュ: ${allOrdersCacheRef.current.length}件)`)
-        
-        nextToken = ordersData.nextToken
-        pageCount++
-        
-        // レート制限対応
-        await new Promise(resolve => setTimeout(resolve, 2000))
-      }
-    } catch (error) {
-      console.error("[DEBUG] バックグラウンド取得エラー:", error)
-    } finally {
-      setState(prev => ({
-        ...prev,
-        isBackgroundLoading: false,
-        backgroundProgress: {
-          current: allOrdersCacheRef.current.length,
-          total: allOrdersCacheRef.current.length,
-          status: `完了 - ${allOrdersCacheRef.current.length}件をキャッシュ`
-        }
-      }))
-      
-      console.log(`[DEBUG] バックグラウンド取得完了: 総計${allOrdersCacheRef.current.length}件をキャッシュ`)
-    }
-  }, [])
-
-  // キャッシュから日付範囲でフィルタリング
-  const getFilteredOrdersFromCache = useCallback((startDate?: string, endDate?: string): Order[] => {
-    if (!startDate && !endDate) {
-      return allOrdersCacheRef.current
-    }
-    
-    return allOrdersCacheRef.current.filter(order => {
-      const orderDate = new Date(order.purchaseDate)
-      
-      if (startDate) {
-        const start = new Date(startDate)
-        if (orderDate < start) return false
-      }
-      
-      if (endDate) {
-        const end = new Date(endDate)
-        end.setHours(23, 59, 59, 999) // その日の終わりまで含める
-        if (orderDate > end) return false
-      }
-      
-      return true
-    })
   }, [])
 
   // クリーンアップ
@@ -518,7 +231,6 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
       clearInterval(pollingIntervalRef.current)
       pollingIntervalRef.current = null
     }
-    backgroundJobRef.current.cancel = true
   }, [])
 
   // 初回ロード時にデータを取得
@@ -539,8 +251,5 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     goToPreviousPage,
     goToPage,
     filterByDateRange,
-    getFilteredOrdersFromCache,
-    startBackgroundFetching,
-    enrichOrdersWithProductDetails,
   }
 }
