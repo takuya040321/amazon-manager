@@ -302,6 +302,16 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
       // キャッシュを更新
       allOrdersCacheRef.current = [...sortedOrders]
       
+      // 段階的表示: 基本情報表示後、すぐに商品詳細を非同期取得
+      if (ordersData.needsEnrichment && sortedOrders.length > 0) {
+        console.log("[DEBUG] 商品詳細の非同期取得を開始")
+        const orderIds = sortedOrders.map(order => order.amazonOrderId)
+        // 少し遅延を入れてUIの描画完了を待つ
+        setTimeout(() => {
+          enrichOrdersWithProductDetails(orderIds)
+        }, 100)
+      }
+      
       // バックグラウンド取得を開始
       if (ordersData.nextToken && sortedOrders.length >= 100) {
         console.log("[DEBUG] バックグラウンドでの追加データ取得を開始")
@@ -313,6 +323,70 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         isLoading: false,
         error: error instanceof Error ? error.message : "未知のエラーが発生しました",
       }))
+    }
+  }, [])
+
+  // 商品詳細を非同期で取得してUIを更新
+  const enrichOrdersWithProductDetails = useCallback(async (orderIds: string[]) => {
+    if (orderIds.length === 0) return
+    
+    console.log(`[DEBUG] 商品詳細の非同期取得開始: ${orderIds.length}件`)
+    
+    try {
+      const response = await fetch('/api/orders/enrich', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderIds })
+      })
+      
+      if (!response.ok) {
+        throw new Error(`商品詳細取得エラー: ${response.status}`)
+      }
+      
+      const { orders: enrichedOrders } = await response.json()
+      
+      // 既存の注文リストを商品詳細で更新
+      setState(prev => {
+        const updatedOrders = prev.orders.map(order => {
+          const enriched = enrichedOrders.find((e: any) => e.id === order.id)
+          if (enriched) {
+            return {
+              ...order,
+              items: enriched.items,
+              reviewRequestStatus: enriched.reviewRequestStatus,
+              solicitationEligible: enriched.solicitationEligible,
+              solicitationReason: enriched.solicitationReason,
+            }
+          }
+          return order
+        })
+        
+        // キャッシュも更新
+        allOrdersCacheRef.current = allOrdersCacheRef.current.map(order => {
+          const enriched = enrichedOrders.find((e: any) => e.id === order.id)
+          if (enriched) {
+            return {
+              ...order,
+              items: enriched.items,
+              reviewRequestStatus: enriched.reviewRequestStatus,
+              solicitationEligible: enriched.solicitationEligible,
+              solicitationReason: enriched.solicitationReason,
+            }
+          }
+          return order
+        })
+        
+        return {
+          ...prev,
+          orders: updatedOrders
+        }
+      })
+      
+      console.log(`[DEBUG] 商品詳細の非同期取得完了: ${enrichedOrders.length}件`)
+    } catch (error) {
+      console.error('[DEBUG] 商品詳細取得エラー:', error)
     }
   }, [])
 
@@ -467,5 +541,6 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     filterByDateRange,
     getFilteredOrdersFromCache,
     startBackgroundFetching,
+    enrichOrdersWithProductDetails,
   }
 }

@@ -266,7 +266,7 @@ export default function OrdersPage() {
               Amazon注文からレビュー依頼を送信（商品詳細・依頼可能性込みで表示）
               <br />
               <small className="text-xs text-green-600">
-                ページネーション: 100件ずつ表示・バックグラウンド取得でキャッシュ高速化
+                高速化: 段階的表示(基本情報→商品詳細) + バックグラウンドキャッシュ
               </small>
               {isBackgroundLoading && (
                 <span className="ml-2 text-xs text-blue-600">
@@ -479,15 +479,15 @@ export default function OrdersPage() {
               <div className="flex flex-col items-center justify-center h-64 space-y-4">
                 <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
                 <div className="text-center">
-                  <p className="text-lg font-medium">ページ{currentPage}のデータを高速取得中...</p>
+                  <p className="text-lg font-medium">ページ{currentPage}の基本情報を高速取得中...</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Orders + Catalog Items + Solicitation Actions APIを並列処理で取得中
+                    Orders APIで基本情報を取得→即座表示
                   </p>
                   <p className="text-xs text-green-600 mt-1">
-                    ✅ 並列処理により従来の3倍高速化 (100件を3件ずつバッチ処理)
+                    ⚡ 段階的表示で体感速度大幅向上！基本情報はすぐ表示
                   </p>
-                  <p className="text-xs text-purple-600 mt-1">
-                    完了後、バックグラウンドで追加データを自動取得します
+                  <p className="text-xs text-blue-600 mt-1">
+                    表示後、商品詳細をバックグラウンドで順次追加します
                   </p>
                 </div>
               </div>
@@ -548,7 +548,8 @@ export default function OrdersPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            {order.items.length > 0 && order.items[0].imageUrl && order.items[0].id !== "error" ? (
+                            {/* 商品画像 */}
+                            {order.items.length > 0 && order.items[0].imageUrl && order.items[0].id !== "error" && order.items[0].id !== "loading" ? (
                               <img
                                 src={order.items[0].imageUrl}
                                 alt={order.items[0].title}
@@ -561,16 +562,36 @@ export default function OrdersPage() {
                                 }}
                               />
                             ) : null}
-                            <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center" style={{ display: order.items.length > 0 && order.items[0].imageUrl && order.items[0].id !== "error" ? 'none' : 'flex' }}>
-                              <Package className="h-5 w-5 text-gray-400" />
-                            </div>
+                            
+                            {/* ローディング中のアイコン */}
+                            {order.items.length > 0 && order.items[0].id === "loading" ? (
+                              <div className="w-10 h-10 bg-blue-50 rounded border flex items-center justify-center">
+                                <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />
+                              </div>
+                            ) : (
+                              <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center" 
+                                   style={{ display: order.items.length > 0 && order.items[0].imageUrl && order.items[0].id !== "error" && order.items[0].id !== "loading" ? 'none' : 'flex' }}>
+                                <Package className="h-5 w-5 text-gray-400" />
+                              </div>
+                            )}
+                            
+                            {/* 商品情報 */}
                             <div className="min-w-0">
-                              <div className="text-sm font-medium truncate">
+                              <div className={`text-sm font-medium truncate ${
+                                order.items.length > 0 && order.items[0].id === "loading" 
+                                  ? "text-blue-600 animate-pulse" 
+                                  : ""
+                              }`}>
                                 {order.items.length > 0 ? order.items[0].title : "商品情報なし"}
                               </div>
                               {order.items.length > 1 && (
                                 <div className="text-xs text-muted-foreground">
                                   他{order.items.length - 1}点
+                                </div>
+                              )}
+                              {order.items.length > 0 && order.items[0].id === "loading" && (
+                                <div className="text-xs text-blue-500">
+                                  詳細情報取得中...
                                 </div>
                               )}
                             </div>

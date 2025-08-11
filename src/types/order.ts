@@ -56,6 +56,7 @@ export interface OrdersResponse {
   nextToken?: string
   totalCount?: number
   lastUpdated: string
+  needsEnrichment?: boolean // 商品詳細の追加取得が必要かどうか
 }
 
 export interface ReviewRequest {
