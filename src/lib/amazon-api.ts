@@ -713,9 +713,16 @@ class AmazonApiService {
 
       console.log(`[DEBUG] 注文 ${amazonOrderId} レビュー依頼可能: ${canSendReview}`)
 
+      let detailedReason = "送信可能"
+      
+      if (!canSendReview) {
+        // 詳細な対象外理由を判別
+        detailedReason = await this.analyzeIneligibilityReason(amazonOrderId, response, actions)
+      }
+
       return {
         eligible: canSendReview,
-        reason: canSendReview ? "送信可能" : "Amazon側で対象外",
+        reason: detailedReason,
         actions,
         links
       }
@@ -747,6 +754,96 @@ class AmazonApiService {
         actions: [],
         links: {}
       }
+    }
+  }
+
+  // 詳細な対象外理由を分析
+  private async analyzeIneligibilityReason(amazonOrderId: string, solicitationResponse: any, actions: any[]): Promise<string> {
+    try {
+      // 1. 注文の基本情報を取得して期限チェック
+      const orderInfo = await this.getOrderBasicInfo(amazonOrderId)
+      if (orderInfo) {
+        const orderDate = new Date(orderInfo.PurchaseDate)
+        const daysSinceOrder = Math.floor((Date.now() - orderDate.getTime()) / (1000 * 60 * 60 * 24))
+        
+        // 期限切れチェック（通常30日）
+        if (daysSinceOrder > 30) {
+          return "送信期限切れ"
+        }
+        
+        // ステータスによる判別
+        if (orderInfo.OrderStatus === 'Canceled') {
+          return "注文がキャンセル済み"
+        }
+        
+        if (!['Shipped', 'Delivered', 'InTransit'].includes(orderInfo.OrderStatus)) {
+          return "注文ステータスが対象外"
+        }
+      }
+
+      // 2. Solicitation APIレスポンスの詳細分析
+      const responseText = JSON.stringify(solicitationResponse).toLowerCase()
+      
+      // 既送信済みの判別
+      if (responseText.includes('already') && responseText.includes('sent')) {
+        return "レビュー依頼済み"
+      }
+      
+      // 商品カテゴリ制限の判別
+      if (responseText.includes('restricted') || responseText.includes('prohibited')) {
+        return "制限付き商品カテゴリ"
+      }
+      
+      // ポリシー違反の判別
+      if (responseText.includes('policy') || responseText.includes('violation')) {
+        return "Amazonポリシー違反"
+      }
+      
+      // 買い手による拒否設定
+      if (responseText.includes('buyer') && (responseText.includes('opted') || responseText.includes('declined'))) {
+        return "買い手がレビュー依頼を拒否設定"
+      }
+
+      // 3. アクション配列の分析
+      if (actions.length === 0) {
+        return "利用可能なアクションなし（Amazon側制限）"
+      }
+      
+      // 他のアクションがある場合の分析
+      const availableActions = actions.map((action: any) => {
+        if (action.href) {
+          if (action.href.includes('refund')) return 'refund'
+          if (action.href.includes('warranty')) return 'warranty' 
+          if (action.href.includes('messaging')) return 'messaging'
+        }
+        return 'unknown'
+      }).filter(action => action !== 'unknown')
+      
+      if (availableActions.length > 0) {
+        return `他アクションのみ利用可能（${availableActions.join(', ')}）`
+      }
+
+      // 4. デフォルトの詳細理由
+      return "Amazon側で対象外（詳細不明）"
+      
+    } catch (error) {
+      console.warn(`[DEBUG] 詳細理由分析エラー for ${amazonOrderId}:`, error)
+      return "Amazon側で対象外（分析エラー）"
+    }
+  }
+
+  // 注文の基本情報を取得（詳細分析用）
+  private async getOrderBasicInfo(amazonOrderId: string): Promise<any> {
+    try {
+      const apiParams: Record<string, string> = {
+        MarketplaceIds: this.config.marketplace,
+      }
+      
+      const response = await this.makeApiRequest(`/orders/v0/orders/${amazonOrderId}`, apiParams)
+      return response.payload
+    } catch (error) {
+      console.warn(`[DEBUG] 注文基本情報取得エラー for ${amazonOrderId}:`, error)
+      return null
     }
   }
 
