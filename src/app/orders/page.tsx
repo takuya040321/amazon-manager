@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { RefreshCw, Eye, Package, Download, Mail, Send, ChevronRight, ChevronLeft } from "lucide-react"
+import { RefreshCw, Eye, Package, Download, Mail, Send, ChevronRight, ChevronLeft, Database } from "lucide-react"
 import { useOrders } from "@/hooks/use-orders"
 import { useReviewRequests } from "@/hooks/use-review-requests"
 import { useDateFilter } from "@/hooks/use-date-filter"
@@ -54,7 +54,8 @@ export default function OrdersPage() {
     refreshOrders, 
     goToNextPage,
     goToPreviousPage,
-    filterByDateRange
+    filterByDateRange,
+    fetchFullData
   } = useOrders()
   const { sendBatchReviewRequests, isLoading: isReviewLoading, error: reviewError } = useReviewRequests()
   const { checkEligibility, isChecking: isEligibilityChecking, results: eligibilityResults } = useEligibilityCheck()
@@ -257,6 +258,15 @@ export default function OrdersPage() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button 
+              onClick={fetchFullData} 
+              disabled={isLoading}
+              className="bg-purple-600 hover:bg-purple-700"
+              title="過去1ヶ月〜7日前の全注文データをAPIから取得して保存"
+            >
+              <Database className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {isLoading ? "取得中..." : "全データ取得"}
+            </Button>
             {!eligibilityChecked && stats.needsEligibilityCheck > 0 && (
               <Button 
                 onClick={handleCheckEligibility} 

@@ -340,7 +340,7 @@ class AmazonApiService {
     }
   }
 
-  // 自動ページネーション機能（複数ページを自動取得・結合）
+  // Orders API 60秒クールダウン対応の自動ページネーション
   private async getOrdersWithPagination(params: {
     createdAfter?: string
     createdBefore?: string
@@ -353,8 +353,9 @@ class AmazonApiService {
     let totalFetched = 0
     const pageSize = 100 // 毎回最大100件取得
     const maxPages = Math.ceil(params.totalLimit / pageSize)
+    let ordersAwaitingSolicitation: any[] = [] // Solicitation待ちの注文
 
-    console.log(`[DEBUG] 自動ページネーション開始: 目標${params.totalLimit}件, 最大${maxPages}ページ`)
+    console.log(`[DEBUG] Orders API 60秒クールダウン対応ページネーション開始: 目標${params.totalLimit}件, 最大${maxPages}ページ`)
 
     for (let page = 1; page <= maxPages && totalFetched < params.totalLimit; page++) {
       try {
@@ -368,7 +369,7 @@ class AmazonApiService {
         if (params.orderStatuses) apiParams.OrderStatuses = params.orderStatuses.join(",")
         if (nextToken) apiParams.NextToken = nextToken
 
-        console.log(`[DEBUG] ページ${page}/${maxPages}を取得中...`)
+        console.log(`[DEBUG] Orders APIページ${page}/${maxPages}を取得中...`)
         const response = await this.makeApiRequest("/orders/v0/orders", apiParams)
         
         if (!response.payload.Orders || response.payload.Orders.length === 0) {
@@ -376,29 +377,40 @@ class AmazonApiService {
           break
         }
 
-        // ページごとに基本情報のみで処理
+        // Orders APIで取得したデータをSolicitation待ちキューに追加
         const remainingNeeded = params.totalLimit - totalFetched
         const maxOrdersToProcess = Math.min(100, Math.min(remainingNeeded, response.payload.Orders.length))
         const pageOrders = response.payload.Orders.slice(0, maxOrdersToProcess)
-        console.log(`[DEBUG] ページ${page}: ${pageOrders.length}件を順次処理で取得予定`)
-        const ordersWithItems = await this.processOrdersSequentially(pageOrders)
+        ordersAwaitingSolicitation.push(...pageOrders)
         
-        allOrders.push(...ordersWithItems)
-        totalFetched += ordersWithItems.length
+        console.log(`[DEBUG] ページ${page}: ${pageOrders.length}件をSolicitation待ちキューに追加 (キュー: ${ordersAwaitingSolicitation.length}件)`)
 
-        console.log(`[DEBUG] ページ${page}: ${ordersWithItems.length}件取得 (順次処理完了、累計: ${totalFetched}/${params.totalLimit})`)
-
-        // 各ページ完了時に保存（統合保存）
-        await ordersStorage.saveOrdersWithMerge(allOrders)
-
+        // nextTokenの更新
         nextToken = response.payload.NextToken
-        if (!nextToken || totalFetched >= params.totalLimit) {
-          console.log(`[DEBUG] 取得完了: ${totalFetched}件`)
+        const hasMorePages = nextToken && totalFetched < params.totalLimit
+        
+        if (hasMorePages) {
+          console.log(`[DEBUG] Orders API 60秒クールダウン開始、その間にSolicitation API処理実行`)
+          
+          // 60秒のクールダウン期間中にSolicitation APIを実行
+          const solicitationPromise = this.processSolicitationDuringCooldown(ordersAwaitingSolicitation, allOrders)
+          
+          // 60秒待機
+          const cooldownPromise = new Promise(resolve => setTimeout(resolve, 60000))
+          
+          // 並行処理（Solicitation処理と60秒待機）
+          await Promise.all([solicitationPromise, cooldownPromise])
+          
+          // 処理済み注文をキューから削除
+          ordersAwaitingSolicitation = []
+          
+        } else {
+          // 最後のページ：残りのSolicitation処理を完了
+          console.log(`[DEBUG] 最終ページ、残り${ordersAwaitingSolicitation.length}件のSolicitation処理完了`)
+          await this.processSolicitationDuringCooldown(ordersAwaitingSolicitation, allOrders)
+          ordersAwaitingSolicitation = []
           break
         }
-
-        // API制限対応: 順次処理後の間隔調整
-        await new Promise(resolve => setTimeout(resolve, 1000))
 
       } catch (error) {
         console.error(`[DEBUG] ページ${page}の取得でエラー:`, error)
@@ -406,29 +418,62 @@ class AmazonApiService {
       }
     }
 
+    // 最終保存
+    if (allOrders.length > 0) {
+      await ordersStorage.saveOrdersWithMerge(allOrders)
+    }
+
     return {
       orders: allOrders,
       nextToken: nextToken,
-      totalCount: totalFetched,
+      totalCount: allOrders.length,
       lastUpdated: new Date().toISOString(),
     }
   }
 
-  // 順次処理で注文データを処理（バッチ処理を廃止）
+  // Orders APIクールダウン期間中のSolicitation処理
+  private async processSolicitationDuringCooldown(ordersQueue: any[], processedOrders: Order[]): Promise<void> {
+    if (ordersQueue.length === 0) return
+    
+    console.log(`[DEBUG] クールダウン期間中にSolicitation処理開始: ${ordersQueue.length}件`)
+    
+    for (let i = 0; i < ordersQueue.length; i++) {
+      const order = ordersQueue[i]
+      
+      try {
+        console.log(`[DEBUG] クールダウン中Solicitation (${i + 1}/${ordersQueue.length}): ${order.AmazonOrderId}`)
+        const enrichedOrder = await this.processOrderWithDetails(order, i + 1, ordersQueue.length)
+        processedOrders.push(enrichedOrder)
+        
+        // Solicitation API制限対応: 1秒待機
+        if (i < ordersQueue.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+      } catch (error) {
+        console.error(`[DEBUG] クールダウン中注文 ${order.AmazonOrderId} の処理エラー:`, error)
+        const basicOrder = this.createBasicOrder(order, "処理エラー")
+        processedOrders.push(basicOrder)
+      }
+    }
+    
+    console.log(`[DEBUG] クールダウン期間中Solicitation処理完了: ${ordersQueue.length}件`)
+  }
+
+  // 順次処理で注文データを処理（Orders API取得後、Solicitation APIを順次実行）
   private async processOrdersSequentially(ordersData: any[]): Promise<Order[]> {
-    console.log(`[DEBUG] 順次処理で${ordersData.length}件の注文詳細を取得開始`)
+    console.log(`[DEBUG] ${ordersData.length}件の注文に対してSolicitation API順次実行開始`)
     
     const enrichedOrders: Order[] = []
     
     for (let i = 0; i < ordersData.length; i++) {
       const order = ordersData[i]
-      console.log(`[DEBUG] 注文 ${i + 1}/${ordersData.length}: ${order.AmazonOrderId} を処理中...`)
+      console.log(`[DEBUG] 注文 ${i + 1}/${ordersData.length}: ${order.AmazonOrderId} のSolicitation API呼び出し中...`)
       
       try {
         const enrichedOrder = await this.processOrderWithDetails(order, i + 1, ordersData.length)
         enrichedOrders.push(enrichedOrder)
         
-        // API制限対応: Solicitation API用に1秒待機
+        // Solicitation API制限対応: 1秒待機
         if (i < ordersData.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 1000))
         }
@@ -509,7 +554,7 @@ class AmazonApiService {
     // チェック対象の注文情報を収集（後でまとめて保存用）
     const updatedOrders: { amazonOrderId: string; updates: Partial<Order> }[] = []
 
-    // 必要な注文のみSolicitationチェックを実行
+    // 必要な注文のSolicitationチェックを順次実行
     for (let i = 0; i < ordersNeedingCheck.length; i++) {
       const order = ordersNeedingCheck[i]
       console.log(`[DEBUG] Solicitation API呼び出し中 (${i + 1}/${ordersNeedingCheck.length}): ${order.amazonOrderId}`)
@@ -600,13 +645,15 @@ class AmazonApiService {
     console.log(`[DEBUG] 全データ更新保存完了: ${updatedAllOrders.length}件`)
   }
 
-  // 単一注文の詳細処理（OrderItems API不要）
+
+  // 単一注文の詳細処理（Solicitation APIのみ実行）
   private async processOrderWithDetails(order: any, index: number, total: number): Promise<Order> {
     try {
-      console.log(`[DEBUG] 注文 ${order.AmazonOrderId} の詳細取得中... (${index}/${total})`)
+      if (total > 0) {
+        console.log(`[DEBUG] 注文 ${order.AmazonOrderId} の詳細取得中... (${index}/${total})`)
+      }
       
       // 1. Solicitation APIのみ実行
-      console.log(`[DEBUG] Solicitation API呼び出し中 (${order.AmazonOrderId})`)
       const solicitationResult = await this.getSolicitationActions(order.AmazonOrderId)
       
       // 2. 基本的な商品データは注文情報から取得（OrderItems API不要）
@@ -647,7 +694,9 @@ class AmazonApiService {
         solicitationReason: solicitationResult.reason,
       }
       
-      console.log(`[DEBUG] 注文 ${order.AmazonOrderId} の詳細取得完了`)
+      if (total > 0) {
+        console.log(`[DEBUG] 注文 ${order.AmazonOrderId} の詳細取得完了`)
+      }
       return enrichedOrder
       
     } catch (error) {

@@ -1,24 +1,44 @@
 import { NextRequest, NextResponse } from "next/server"
 import { amazonApiService } from "@/lib/amazon-api"
-import { cacheService } from "@/lib/cache"
+import { ordersStorage } from "@/lib/orders-storage"
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const forceRefresh = searchParams.get("refresh") === "true"
+  const fetchFull = searchParams.get("fetchFull") === "true"
   const nextToken = searchParams.get("nextToken")
 
   try {
-    console.log(`[DEBUG] API Route - refresh: ${forceRefresh}, nextToken: ${nextToken ? 'present' : 'none'}`)
+    console.log(`[DEBUG] API Route - refresh: ${forceRefresh}, fetchFull: ${fetchFull}, nextToken: ${nextToken ? 'present' : 'none'}`)
     
-    // キャッシュから取得を試みる（リフレッシュまたはnextTokenが指定されていない場合）
-    if (!forceRefresh && !nextToken) {
-      const cachedOrders = cacheService.getOrders()
-      if (cachedOrders) {
-        console.log(`[DEBUG] Returning cached orders: ${cachedOrders.orders.length} items`)
-        return NextResponse.json(cachedOrders)
-      }
+    // 通常のページネーション（nextToken使用時）は従来通り
+    if (nextToken && !fetchFull) {
+      console.log("[DEBUG] ページネーション処理（従来通り）")
+      const ordersResponse = await amazonApiService.getOrders({
+        nextToken,
+        forceRefresh: false,
+      })
+      return NextResponse.json(ordersResponse)
     }
 
+    // 全件取得でない場合は、永続化ストレージから読み込み
+    if (!fetchFull && !forceRefresh) {
+      const orders = await ordersStorage.loadOrders()
+      const stats = await ordersStorage.getStorageStats()
+      
+      console.log(`[DEBUG] ストレージから読み込み: ${orders.length}件`)
+      
+      return NextResponse.json({
+        orders,
+        totalCount: orders.length,
+        lastUpdated: stats.lastUpdated,
+        fromStorage: true
+      })
+    }
+
+    // 全件取得（fetchFull=true）の場合のみAmazon APIから取得
+    console.log("[DEBUG] 全件データ取得処理開始")
+    
     // Amazon APIから新しいデータを取得（デフォルトは7日前から過去1ヶ月間）
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7日前
     const oneMonthBeforeSevenDaysAgo = new Date(sevenDaysAgo.getTime() - 30 * 24 * 60 * 60 * 1000) // 7日前から1ヶ月遡る
@@ -42,22 +62,22 @@ export async function GET(request: NextRequest) {
     
     const maxResults = parseInt(searchParams.get("maxResults") || "500") // デフォルト500件（自動ページネーション）
 
-    console.log(`[DEBUG] Calling Amazon API with nextToken: ${nextToken || 'none'}`)
+    console.log(`[DEBUG] Calling Amazon API for full data fetch`)
     
     const ordersResponse = await amazonApiService.getOrders({
       createdAfter,
       createdBefore,
       maxResultsPerPage: Math.min(maxResults, 100), // API単回制限は100件
       totalLimit: maxResults, // 自動ページネーション用の目標件数
-      nextToken,
-      forceRefresh, // 強制リフレッシュフラグを渡す
+      forceRefresh: true, // 全件取得時は強制リフレッシュ
     })
     
-    console.log(`[DEBUG] Amazon API returned ${ordersResponse.orders.length} orders, nextToken: ${ordersResponse.nextToken ? 'present' : 'none'}`)
+    console.log(`[DEBUG] Amazon API returned ${ordersResponse.orders.length} orders for full fetch`)
 
-    // キャッシュに保存（nextTokenがない場合のみ = 最初のページのみ）
-    if (!nextToken) {
-      cacheService.setOrders(ordersResponse)
+    // 全件取得の場合は永続化ストレージに保存
+    if (fetchFull) {
+      await ordersStorage.saveOrders(ordersResponse.orders, ordersResponse.totalCount, true)
+      console.log("[DEBUG] 全件データを永続化ストレージに保存完了")
     }
 
     return NextResponse.json(ordersResponse)

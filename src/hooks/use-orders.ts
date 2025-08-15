@@ -24,6 +24,7 @@ interface UseOrdersActions {
   goToPreviousPage: () => Promise<void>
   goToPage: (page: number) => Promise<void>
   filterByDateRange: (startDate?: string, endDate?: string) => Promise<void>
+  fetchFullData: () => Promise<void>
 }
 
 export function useOrders(): UseOrdersState & UseOrdersActions {
@@ -180,29 +181,76 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     })
   }, [refreshOrders])
 
+  // 全件データ取得（過去1ヶ月〜7日前）
+  const fetchFullData = useCallback(async () => {
+    setState(prev => ({ ...prev, isLoading: true, error: null }))
 
-  // 初回ロード時にデータ取得（保存されたデータを優先）
+    try {
+      const searchParams = new URLSearchParams()
+      searchParams.set("refresh", "true")
+      searchParams.set("fetchFull", "true")
+      
+      // 過去1ヶ月〜7日前の期間を設定
+      const oneMonthAgo = new Date()
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      
+      searchParams.set("createdAfter", oneMonthAgo.toISOString())
+      searchParams.set("createdBefore", sevenDaysAgo.toISOString())
+      
+      const response = await fetch(`/api/orders?${searchParams.toString()}`)
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "全件データ取得に失敗しました")
+      }
+
+      const ordersData: OrdersResponse = await response.json()
+
+      // 注文日時で新しい順（降順）にソート
+      const sortedOrders = ordersData.orders.sort((a, b) => 
+        new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
+      )
+
+      setState({
+        orders: sortedOrders,
+        isLoading: false,
+        error: null,
+        lastUpdated: ordersData.lastUpdated,
+        totalCount: ordersData.totalCount || sortedOrders.length,
+        nextToken: null,
+        hasMorePages: false,
+        currentPage: 1,
+        itemsPerPage: 100,
+        totalPages: Math.ceil((ordersData.totalCount || sortedOrders.length) / 100),
+      })
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "全件データ取得に失敗しました",
+      }))
+    }
+  }, [])
+
+
+  // 初回ロード時にJSONファイルからデータを読み込み
   const loadInitialData = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }))
     
     try {
-      const searchParams = new URLSearchParams()
-      // 初回ロードでは強制リフレッシュしない（保存データを優先）
-      searchParams.set("maxResults", "100")
-      
-      const url = `/api/orders?${searchParams.toString()}`
-      
-      const response = await fetch(url, {
+      // JSONファイルからのデータ読み込みAPIを呼び出し
+      const response = await fetch('/api/orders/load-from-storage', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        signal: AbortSignal.timeout(300000)
       })
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: "レスポンスの解析に失敗しました" }))
-        throw new Error(errorData.error || `HTTP ${response.status}: 注文データの取得に失敗しました`)
+        throw new Error(errorData.error || `HTTP ${response.status}: 保存データの読み込みに失敗しました`)
       }
       
       const ordersData: OrdersResponse = await response.json()
@@ -220,8 +268,8 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
         error: null,
         lastUpdated: ordersData.lastUpdated,
         totalCount,
-        nextToken: ordersData.nextToken,
-        hasMorePages: !!ordersData.nextToken,
+        nextToken: null,
+        hasMorePages: false,
         currentPage: 1,
         itemsPerPage: 100,
         totalPages: Math.ceil(totalCount / 100),
@@ -231,7 +279,7 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : "データの取得に失敗しました",
+        error: error instanceof Error ? error.message : "保存データの読み込みに失敗しました",
       }))
     }
   }, [])
@@ -262,5 +310,6 @@ export function useOrders(): UseOrdersState & UseOrdersActions {
     goToPreviousPage,
     goToPage,
     filterByDateRange,
+    fetchFullData,
   }
 }
